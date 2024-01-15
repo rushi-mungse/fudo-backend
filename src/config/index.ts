@@ -13,6 +13,9 @@ export const {
     DB_USERNAME,
     DB_PASSWORD,
     DB_NAME,
+    HASH_SECRET,
+    PRIVATE_KEY,
+    REFRESH_TOKEN_SECRET,
 } = process.env;
 
 export { default as logger } from "./logger";
