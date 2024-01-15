@@ -8,9 +8,9 @@ export default new DataSource({
     username: DB_USERNAME,
     password: DB_PASSWORD,
     database: DB_NAME,
-    synchronize: false,
+    synchronize: true,
     logging: false,
-    entities: ["../src/entity/*.ts"],
+    entities: ["src/entity/*.ts"],
     migrations: [],
     subscribers: [],
 });
