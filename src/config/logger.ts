@@ -7,7 +7,7 @@ export default winston.createLogger({
         winston.format.timestamp(),
         winston.format.json(),
     ),
-    defaultMeta: { serviceName: "auth-service" },
+    defaultMeta: { serviceName: "fudo-service" },
     transports: [
         new winston.transports.File({
             level: "info",
