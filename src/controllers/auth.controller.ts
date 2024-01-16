@@ -3,7 +3,12 @@ import { validationResult } from "express-validator";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
 import { UserService, CredentialService, TokenService } from "../services";
-import { JWTPayload, SendOtpRequest, VerifyOtpRequest } from "../types";
+import {
+    AuthRequest,
+    JWTPayload,
+    SendOtpRequest,
+    VerifyOtpRequest,
+} from "../types";
 
 class AuthController {
     constructor(
@@ -138,6 +143,17 @@ class AuthController {
                 user: { ...user, password: null },
                 message: "User register successfully.",
             });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async self(req: AuthRequest, res: Response, next: NextFunction) {
+        const userId = req.auth.userId;
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+            return res.json({ user: { ...user, password: null } });
         } catch (error) {
             return next(error);
         }
