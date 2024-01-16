@@ -6,12 +6,14 @@ import express, {
 } from "express";
 import { AuthController } from "../controllers";
 import {
+    forgetPasswordValidator,
     loginValidator,
     sendOtpValidator,
     verifyOtpValidator,
 } from "../validators/auth";
 import {
     AuthRequest,
+    ForgetPasswordRequest,
     LoginRequest,
     SendOtpRequest,
     VerifyOtpRequest,
@@ -97,6 +99,17 @@ router.get(
     (req: Request, res: Response, next: NextFunction) =>
         authController.refresh(
             req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/forget-password",
+    forgetPasswordValidator,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.forgetPassword(
+            req as ForgetPasswordRequest,
             res,
             next,
         ) as unknown as RequestHandler,
