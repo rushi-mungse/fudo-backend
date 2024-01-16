@@ -16,6 +16,7 @@ export const {
     HASH_SECRET,
     PRIVATE_KEY,
     REFRESH_TOKEN_SECRET,
+    JWKS_URL,
 } = process.env;
 
 export { default as logger } from "./logger";
