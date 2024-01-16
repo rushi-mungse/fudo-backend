@@ -158,6 +158,24 @@ class AuthController {
             return next(error);
         }
     }
+
+    async logout(req: AuthRequest, res: Response, next: NextFunction) {
+        const tokenId = Number(req.auth.tokenId);
+
+        try {
+            await this.tokenService.deleteToken(Number(tokenId));
+
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
+
+            return res.json({
+                user: null,
+                message: "User successfully logout.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default AuthController;

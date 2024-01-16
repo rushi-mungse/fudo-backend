@@ -10,7 +10,7 @@ import { AuthRequest, SendOtpRequest, VerifyOtpRequest } from "../types";
 import { CredentialService, TokenService, UserService } from "../services";
 import { AppDataSource, logger } from "../config";
 import { Token, User } from "../entity";
-import { checkAccessToken } from "../middlewares";
+import { checkAccessToken, checkRefreshToken } from "../middlewares";
 
 const router = express.Router();
 
@@ -53,6 +53,17 @@ router.get(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         authController.self(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.get(
+    "/logout",
+    [checkAccessToken, checkRefreshToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.logout(
             req as AuthRequest,
             res,
             next,
