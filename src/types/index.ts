@@ -56,3 +56,9 @@ export interface LoginData {
 export interface LoginRequest extends Request {
     body: LoginData;
 }
+
+export interface ForgetPasswordRequest extends Request {
+    body: {
+        email: string;
+    };
+}
