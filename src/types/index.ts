@@ -62,3 +62,14 @@ export interface ForgetPasswordRequest extends Request {
         email: string;
     };
 }
+
+export interface SetPasswordRequest extends Request {
+    body: {
+        fullName: string;
+        email: string;
+        password: string;
+        confirmPassword: string;
+        hashOtp: string;
+        otp: string;
+    };
+}
