@@ -16,6 +16,7 @@ import {
     ForgetPasswordRequest,
     LoginRequest,
     SendOtpRequest,
+    SetPasswordRequest,
     VerifyOtpRequest,
 } from "../types";
 import { CredentialService, TokenService, UserService } from "../services";
@@ -110,6 +111,17 @@ router.post(
     (req: Request, res: Response, next: NextFunction) =>
         authController.forgetPassword(
             req as ForgetPasswordRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/set-password",
+    verifyOtpValidator,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.setPassword(
+            req as SetPasswordRequest,
             res,
             next,
         ) as unknown as RequestHandler,
