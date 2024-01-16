@@ -9,6 +9,7 @@ import {
     JWTPayload,
     LoginRequest,
     SendOtpRequest,
+    SetPasswordRequest,
     VerifyOtpRequest,
 } from "../types";
 
@@ -332,6 +333,62 @@ class AuthController {
                 otp,
                 message: `Otp sent to email ${email} successfully.`,
             });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async setPassword(
+        req: SetPasswordRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ error: result.array() });
+        }
+
+        const { email, hashOtp, otp, password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            const err = createHttpError(
+                400,
+                "confirm password not match to password!",
+            );
+            return next(err);
+        }
+
+        if (hashOtp.split("#").length !== 2) {
+            const error = createHttpError(400, "Otp is invalid!");
+            return next(error);
+        }
+
+        const [prevHashedOtp, expires] = hashOtp.split("#");
+        try {
+            const user = await this.userService.findUserByEmail(email);
+            if (!user) {
+                return next(
+                    createHttpError(400, "This email is not registered!"),
+                );
+            }
+
+            if (Date.now() > +expires) {
+                const error = createHttpError(408, "Otp is expired!");
+                return next(error);
+            }
+
+            const data = `${otp}.${email}.${expires}`;
+            const hashData = this.credentialService.hashDataWithSecret(data);
+
+            if (hashData !== prevHashedOtp) {
+                const error = createHttpError(400, "Otp is invalid!");
+                return next(error);
+            }
+
+            const hashPassword =
+                await this.credentialService.hashData(password);
+            await this.userService.updateUserPassword(user.id, hashPassword);
+            return res.json({ user: { ...user, password: null } });
         } catch (error) {
             return next(error);
         }
