@@ -6,10 +6,11 @@ import express, {
 } from "express";
 import { AuthController } from "../controllers";
 import { sendOtpValidator, verifyOtpValidator } from "../validators/auth";
-import { SendOtpRequest, VerifyOtpRequest } from "../types";
+import { AuthRequest, SendOtpRequest, VerifyOtpRequest } from "../types";
 import { CredentialService, TokenService, UserService } from "../services";
 import { AppDataSource, logger } from "../config";
 import { Token, User } from "../entity";
+import { checkAccessToken } from "../middlewares";
 
 const router = express.Router();
 
@@ -42,6 +43,17 @@ router.post(
     (req: Request, res: Response, next: NextFunction) =>
         authController.verifyOtp(
             req as VerifyOtpRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.get(
+    "/self",
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.self(
+            req as AuthRequest,
             res,
             next,
         ) as unknown as RequestHandler,
