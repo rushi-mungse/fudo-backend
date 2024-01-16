@@ -2,7 +2,6 @@ import request from "supertest";
 import { DataSource } from "typeorm";
 import app from "../../src/app";
 import { AppDataSource } from "../../src/config";
-import { User } from "../../src/entity";
 
 describe("[POST] /api/auth/forget-password", () => {
     let connection: DataSource;

@@ -3,11 +3,10 @@ import { DataSource } from "typeorm";
 import createJWKSMock from "mock-jwks";
 import app from "../../src/app";
 import { AppDataSource } from "../../src/config";
-import { getTokens } from "../utils";
 import { UserRole } from "../../src/constants";
 import { User } from "../../src/entity";
 
-describe("[GET] auth/self", () => {
+describe("[GET] /api/auth/self", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJWKSMock>;
 

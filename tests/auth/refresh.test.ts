@@ -7,7 +7,7 @@ import { UserRole } from "../../src/constants";
 import { Token } from "../../src/entity";
 import { TokenService } from "../../src/services";
 
-describe("[GET] auth/refresh", () => {
+describe("[GET] /api/auth/refresh", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJWKSMock>;
 
