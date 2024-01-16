@@ -243,6 +243,56 @@ class AuthController {
             message: "User login successfully.",
         });
     }
+
+    async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+        const auth = req.auth;
+
+        let user;
+        try {
+            user = await this.userService.findUserById(Number(auth.userId));
+            if (!user) {
+                const error = createHttpError(
+                    400,
+                    "User whit token could not found!",
+                );
+                return next(error);
+            }
+            await this.tokenService.deleteToken(Number(auth.tokenId));
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            const payload: JWTPayload = {
+                userId: String(user.id),
+                role: user.role,
+            };
+
+            const accessToken = this.tokenService.signAccessToken(payload);
+            const token = await this.tokenService.saveRefreshToken(user);
+            const refreshToken = this.tokenService.signRefreshToken({
+                ...payload,
+                tokenId: String(token.id),
+            });
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365,
+            });
+            return res.json({ user: { ...user, password: null } });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default AuthController;
