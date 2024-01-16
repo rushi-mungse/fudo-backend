@@ -12,6 +12,10 @@ class UserService {
     async saveUser(userData: UserData) {
         return await this.userRepository.save(userData);
     }
+
+    async findUserById(userId: number) {
+        return await this.userRepository.findOne({ where: { id: userId } });
+    }
 }
 
 export default UserService;
