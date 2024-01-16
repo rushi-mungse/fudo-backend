@@ -5,12 +5,25 @@ import express, {
     Response,
 } from "express";
 import { AuthController } from "../controllers";
-import { sendOtpValidator, verifyOtpValidator } from "../validators/auth";
-import { AuthRequest, SendOtpRequest, VerifyOtpRequest } from "../types";
+import {
+    loginValidator,
+    sendOtpValidator,
+    verifyOtpValidator,
+} from "../validators/auth";
+import {
+    AuthRequest,
+    LoginRequest,
+    SendOtpRequest,
+    VerifyOtpRequest,
+} from "../types";
 import { CredentialService, TokenService, UserService } from "../services";
 import { AppDataSource, logger } from "../config";
 import { Token, User } from "../entity";
-import { checkAccessToken, checkRefreshToken } from "../middlewares";
+import {
+    checkAccessToken,
+    checkInvalidRefreshToken,
+    checkRefreshToken,
+} from "../middlewares";
 
 const router = express.Router();
 
@@ -68,6 +81,14 @@ router.get(
             res,
             next,
         ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/login",
+    loginValidator,
+    [checkInvalidRefreshToken],
+    (req: LoginRequest, res: Response, next: NextFunction) =>
+        authController.login(req, res, next) as unknown as RequestHandler,
 );
 
 export default router;

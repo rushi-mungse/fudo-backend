@@ -48,3 +48,11 @@ export interface CookieType {
     accessToken: string;
     refreshToken: string;
 }
+
+export interface LoginData {
+    email: string;
+    password: string;
+}
+export interface LoginRequest extends Request {
+    body: LoginData;
+}

@@ -6,6 +6,7 @@ import { UserService, CredentialService, TokenService } from "../services";
 import {
     AuthRequest,
     JWTPayload,
+    LoginRequest,
     SendOtpRequest,
     VerifyOtpRequest,
 } from "../types";
@@ -175,6 +176,72 @@ class AuthController {
         } catch (error) {
             return next(error);
         }
+    }
+
+    async login(req: LoginRequest, res: Response, next: NextFunction) {
+        const result = validationResult(req);
+        if (!result.isEmpty())
+            return res.status(400).json({ error: result.array() });
+
+        const { email, password } = req.body;
+
+        let user;
+        try {
+            user = await this.userService.findUserByEmail(email);
+            if (!user) {
+                const error = createHttpError(
+                    400,
+                    "Email or Password does not match!",
+                );
+                return next(error);
+            }
+            const isMatch = await this.credentialService.hashCompare(
+                password,
+                user.password,
+            );
+
+            if (!isMatch)
+                return next(
+                    createHttpError(400, "Email or Password does not match!"),
+                );
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            const payload: JWTPayload = {
+                userId: String(user.id),
+                role: user.role,
+            };
+
+            const accessToken = this.tokenService.signAccessToken(payload);
+            const token = await this.tokenService.saveRefreshToken(user);
+            const refreshToken = this.tokenService.signRefreshToken({
+                ...payload,
+                tokenId: String(token.id),
+            });
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365,
+            });
+        } catch (error) {
+            return next(error);
+        }
+
+        return res.json({
+            user: { ...user, password: null },
+            message: "User login successfully.",
+        });
     }
 }
 
