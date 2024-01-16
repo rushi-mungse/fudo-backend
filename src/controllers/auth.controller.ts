@@ -5,6 +5,7 @@ import createHttpError from "http-errors";
 import { UserService, CredentialService, TokenService } from "../services";
 import {
     AuthRequest,
+    ForgetPasswordRequest,
     JWTPayload,
     LoginRequest,
     SendOtpRequest,
@@ -289,6 +290,48 @@ class AuthController {
                 maxAge: 1000 * 60 * 60 * 24 * 365,
             });
             return res.json({ user: { ...user, password: null } });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async forgetPassword(
+        req: ForgetPasswordRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const result = validationResult(req);
+        if (!result.isEmpty())
+            return res.status(400).json({ error: result.array() });
+
+        const { email } = req.body;
+
+        try {
+            const user = await this.userService.findUserByEmail(email);
+            if (!user) {
+                return next(
+                    createHttpError(400, "This email is not registered!"),
+                );
+            }
+
+            const ttl = 1000 * 60 * 10;
+            const expires = Date.now() + ttl;
+            const otp = this.credentialService.generateOtp();
+            const prepareDataForHash = `${otp}.${email}.${expires}`;
+            const hashOtpData =
+                this.credentialService.hashDataWithSecret(prepareDataForHash);
+            const hashOtp = `${hashOtpData}#${expires}`;
+
+            const otpInfo = {
+                fullName: user.fullName,
+                email,
+                hashOtp,
+            };
+            return res.json({
+                otpInfo,
+                otp,
+                message: `Otp sent to email ${email} successfully.`,
+            });
         } catch (error) {
             return next(error);
         }
