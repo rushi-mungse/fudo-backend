@@ -33,7 +33,7 @@ class UserController {
 
             return res.json({
                 message: "Updated user full name successfully.",
-                user,
+                user: { ...user, password: null },
             });
         } catch (error) {
             return next(error);
