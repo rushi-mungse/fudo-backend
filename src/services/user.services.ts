@@ -24,6 +24,10 @@ class UserService {
         user.password = password;
         await this.saveUser(user);
     }
+
+    async deleteUserById(userId: number) {
+        await this.userRepository.delete(userId);
+    }
 }
 
 export default UserService;

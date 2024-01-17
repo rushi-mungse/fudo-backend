@@ -9,7 +9,11 @@ import { UserController } from "../controllers";
 import { checkAccessToken } from "../middlewares";
 import { UserService, CredentialService } from "../services";
 import { User } from "../entity";
-import { ChangePasswordRequest, UpdateUserFullNameRequest } from "../types";
+import {
+    AuthRequest,
+    ChangePasswordRequest,
+    UpdateUserFullNameRequest,
+} from "../types";
 import {
     changePasswordValidator,
     updateUserFullNameValidator,
@@ -44,6 +48,17 @@ router.post(
     (req: Request, res: Response, next: NextFunction) =>
         userController.changePassword(
             req as ChangePasswordRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.delete(
+    "/",
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.deleteUser(
+            req as AuthRequest,
             res,
             next,
         ) as unknown as RequestHandler,

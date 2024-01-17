@@ -3,7 +3,11 @@ import { Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { CredentialService, UserService } from "../services";
-import { ChangePasswordRequest, UpdateUserFullNameRequest } from "../types";
+import {
+    AuthRequest,
+    ChangePasswordRequest,
+    UpdateUserFullNameRequest,
+} from "../types";
 
 class UserController {
     constructor(
@@ -72,6 +76,27 @@ class UserController {
             await this.userService.saveUser(user);
 
             return res.json({ message: "User password changed successfully" });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async deleteUser(req: AuthRequest, res: Response, next: NextFunction) {
+        const userId = req.auth.userId;
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            await this.userService.deleteUserById(Number(userId));
+
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
+
+            return res.json({
+                user: null,
+                message: "User deleted successfully",
+            });
         } catch (error) {
             return next(error);
         }
