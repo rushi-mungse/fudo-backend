@@ -102,29 +102,6 @@ class UserController {
         }
     }
 
-    async getUser(req: Request, res: Response, next: NextFunction) {
-        const userId = req.params.userId;
-        if (isNaN(Number(userId)))
-            return next(createHttpError(400, "Invalid param id!"));
-
-        try {
-            const user = await this.userService.findUserById(Number(userId));
-            if (!user) return next(createHttpError(400, "User not found!"));
-            return res.json({ user: { ...user, password: null } });
-        } catch (error) {
-            return next(error);
-        }
-    }
-
-    async getUsers(req: Request, res: Response, next: NextFunction) {
-        try {
-            const users = await this.userService.getAllUsers();
-            return res.json({ users });
-        } catch (error) {
-            return next(error);
-        }
-    }
-
     async updateUserProfilePicture(
         req: AuthRequest,
         res: Response,
@@ -144,6 +121,29 @@ class UserController {
                 user,
                 message: "User profile picture updated successfully.",
             });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async getUser(req: Request, res: Response, next: NextFunction) {
+        const userId = req.params.userId;
+        if (isNaN(Number(userId)))
+            return next(createHttpError(400, "Invalid param id!"));
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+            return res.json({ user: { ...user, password: null } });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async getUsers(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await this.userService.getAllUsers();
+            return res.json({ users });
         } catch (error) {
             return next(error);
         }

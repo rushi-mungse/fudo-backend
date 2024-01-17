@@ -65,6 +65,17 @@ router.delete(
         ) as unknown as RequestHandler,
 );
 
+router.post(
+    "/update-profile-picture",
+    [checkAccessToken, uploadFile.single("avatar")],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.updateUserProfilePicture(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
 router.get(
     "/:userId",
     [
@@ -83,17 +94,6 @@ router.get(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.getUsers(req, res, next) as unknown as RequestHandler,
-);
-
-router.post(
-    "/update-profile-picture",
-    [checkAccessToken, uploadFile.single("avatar")],
-    (req: Request, res: Response, next: NextFunction) =>
-        userController.updateUserProfilePicture(
-            req as AuthRequest,
-            res,
-            next,
-        ) as unknown as RequestHandler,
 );
 
 export default router;
