@@ -2,9 +2,11 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
+import User from "./User";
 
 @Entity({ name: "shippings" })
 class Shipping {
@@ -19,6 +21,9 @@ class Shipping {
 
     @Column()
     postalCode: string;
+
+    @ManyToOne(() => User, (user) => user.shippings)
+    user: User;
 
     @UpdateDateColumn()
     updatedAt: number;
