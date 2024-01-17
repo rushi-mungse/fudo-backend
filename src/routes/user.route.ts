@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import { AppDataSource, logger } from "../config";
 import { UserController } from "../controllers";
-import { checkAccessToken, hashPermission } from "../middlewares";
+import { checkAccessToken, hashPermission, uploadFile } from "../middlewares";
 import { UserService, CredentialService } from "../services";
 import { User } from "../entity";
 import {
@@ -83,6 +83,17 @@ router.get(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.getUsers(req, res, next) as unknown as RequestHandler,
+);
+
+router.post(
+    "/update-profile-picture",
+    [checkAccessToken, uploadFile.single("avatar")],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.updateUserProfilePicture(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
 );
 
 export default router;

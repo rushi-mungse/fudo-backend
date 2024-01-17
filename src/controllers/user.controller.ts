@@ -124,6 +124,30 @@ class UserController {
             return next(error);
         }
     }
+
+    async updateUserProfilePicture(
+        req: AuthRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const userId = req.auth.userId;
+        const file = req.file;
+        if (!file) return next(createHttpError(400, "User picture not found!"));
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            user.avatar = file.path;
+            await this.userService.saveUser(user);
+            return res.json({
+                user,
+                message: "User profile picture updated successfully.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default UserController;
