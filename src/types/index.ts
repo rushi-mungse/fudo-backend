@@ -80,3 +80,11 @@ export interface UpdateUserFullNameRequest extends Request {
         fullName: string;
     };
 }
+
+export interface ChangePasswordRequest extends Request {
+    auth: JWTPayload;
+    body: {
+        oldPassword: string;
+        newPassword: string;
+    };
+}
