@@ -73,3 +73,10 @@ export interface SetPasswordRequest extends Request {
         otp: string;
     };
 }
+
+export interface UpdateUserFullNameRequest extends Request {
+    auth: JWTPayload;
+    body: {
+        fullName: string;
+    };
+}
