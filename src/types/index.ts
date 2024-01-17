@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { User } from "../entity";
 
 export interface AuthRequest extends Request {
     auth: JWTPayload;
@@ -92,4 +93,16 @@ export interface UpdateUserData {
 
 export interface UpdateUserRequest extends Request {
     body: UpdateUserData;
+}
+
+export interface ShippingData {
+    address: string;
+    city: string;
+    postalCode: string;
+    user?: User;
+}
+
+export interface PostShippingRequest extends Request {
+    auth: JWTPayload;
+    body: ShippingData;
 }
