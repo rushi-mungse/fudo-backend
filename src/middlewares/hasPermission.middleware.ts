@@ -3,8 +3,8 @@ import { AuthRequest } from "../types";
 import createHttpError from "http-errors";
 
 export default (roles: string[]) => {
-    return (req: AuthRequest, res: Response, next: NextFunction) => {
-        const _req = req;
+    return (req: Request, res: Response, next: NextFunction) => {
+        const _req = req as unknown as AuthRequest;
         const roleFromToken = _req.auth.role;
 
         if (!roles.includes(roleFromToken)) {

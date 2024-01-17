@@ -28,6 +28,10 @@ class UserService {
     async deleteUserById(userId: number) {
         await this.userRepository.delete(userId);
     }
+
+    async getAllUsers() {
+        return await this.userRepository.find();
+    }
 }
 
 export default UserService;

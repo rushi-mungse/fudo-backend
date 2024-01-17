@@ -2,11 +2,7 @@ import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
-    auth: {
-        userId: string;
-        role: string;
-        tokenId?: string;
-    };
+    auth: JWTPayload;
 }
 
 export interface SendOtpData {

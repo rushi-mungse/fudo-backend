@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import { AppDataSource, logger } from "../config";
 import { UserController } from "../controllers";
-import { checkAccessToken } from "../middlewares";
+import { checkAccessToken, hashPermission } from "../middlewares";
 import { UserService, CredentialService } from "../services";
 import { User } from "../entity";
 import {
@@ -18,6 +18,7 @@ import {
     changePasswordValidator,
     updateUserFullNameValidator,
 } from "../validators/user";
+import { UserRole } from "../constants";
 
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
@@ -62,6 +63,26 @@ router.delete(
             res,
             next,
         ) as unknown as RequestHandler,
+);
+
+router.get(
+    "/:userId",
+    [
+        checkAccessToken,
+        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.getUser(req, res, next) as unknown as RequestHandler,
+);
+
+router.get(
+    "/",
+    [
+        checkAccessToken,
+        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.getUsers(req, res, next) as unknown as RequestHandler,
 );
 
 export default router;
