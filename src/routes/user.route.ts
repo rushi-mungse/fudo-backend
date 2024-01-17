@@ -13,10 +13,12 @@ import {
     AuthRequest,
     ChangePasswordRequest,
     UpdateUserFullNameRequest,
+    UpdateUserRequest,
 } from "../types";
 import {
     changePasswordValidator,
     updateUserFullNameValidator,
+    updateUserValidator,
 } from "../validators/user";
 import { UserRole } from "../constants";
 
@@ -105,6 +107,21 @@ router.delete(
     (req: Request, res: Response, next: NextFunction) =>
         userController.deleteUserByAdmin(
             req,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/:userId",
+    updateUserValidator,
+    [
+        checkAccessToken,
+        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.updateUser(
+            req as UpdateUserRequest,
             res,
             next,
         ) as unknown as RequestHandler,

@@ -84,3 +84,12 @@ export interface ChangePasswordRequest extends Request {
         newPassword: string;
     };
 }
+
+export interface UpdateUserData {
+    role: string;
+    status: string;
+}
+
+export interface UpdateUserRequest extends Request {
+    body: UpdateUserData;
+}

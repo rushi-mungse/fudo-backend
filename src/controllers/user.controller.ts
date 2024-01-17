@@ -7,6 +7,7 @@ import {
     AuthRequest,
     ChangePasswordRequest,
     UpdateUserFullNameRequest,
+    UpdateUserRequest,
 } from "../types";
 
 class UserController {
@@ -162,6 +163,38 @@ class UserController {
             return res.json({
                 id: userId,
                 message: "User deleted successfully.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async updateUser(
+        req: UpdateUserRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const result = validationResult(req);
+        if (!result.isEmpty())
+            return res.status(400).json({ error: result.array() });
+
+        const userId = req.params.userId;
+        if (isNaN(Number(userId)))
+            return next(createHttpError(400, "User id is invalid!"));
+
+        const { role, status } = req.body;
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            user.role = role;
+            user.status = status;
+
+            await this.userService.saveUser(user);
+
+            return res.json({
+                user: { ...user, password: null },
+                message: "User updated successufully.",
             });
         } catch (error) {
             return next(error);
