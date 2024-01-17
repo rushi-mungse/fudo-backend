@@ -7,7 +7,10 @@ class UserService {
     constructor(private userRepository: Repository<User>) {}
 
     async findUserByEmail(email: string) {
-        return await this.userRepository.findOne({ where: { email } });
+        return await this.userRepository.findOne({
+            where: { email },
+            relations: ["shippings"],
+        });
     }
 
     async saveUser(userData: UserData) {
@@ -15,7 +18,10 @@ class UserService {
     }
 
     async findUserById(userId: number) {
-        return await this.userRepository.findOne({ where: { id: userId } });
+        return await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ["shippings"],
+        });
     }
 
     async updateUserPassword(userId: number, password: string) {
@@ -30,7 +36,7 @@ class UserService {
     }
 
     async getAllUsers() {
-        return await this.userRepository.find();
+        return await this.userRepository.find({ relations: ["shippings"] });
     }
 }
 
