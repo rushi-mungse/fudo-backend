@@ -148,6 +148,25 @@ class UserController {
             return next(error);
         }
     }
+
+    async deleteUserByAdmin(req: Request, res: Response, next: NextFunction) {
+        const userId = req.params.userId;
+        if (isNaN(Number(userId)))
+            return next(createHttpError(400, "Invalid user id!"));
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            await this.userService.deleteUserById(Number(userId));
+            return res.json({
+                id: userId,
+                message: "User deleted successfully.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default UserController;

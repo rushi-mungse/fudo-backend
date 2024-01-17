@@ -96,4 +96,18 @@ router.get(
         userController.getUsers(req, res, next) as unknown as RequestHandler,
 );
 
+router.delete(
+    "/:userId",
+    [
+        checkAccessToken,
+        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.deleteUserByAdmin(
+            req,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
 export default router;
