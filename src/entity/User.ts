@@ -38,7 +38,9 @@ class User {
     @Column({ type: "enum", enum: UserStatus, default: UserStatus.VALID })
     status: string;
 
-    @OneToMany(() => Shipping, (shipping) => shipping.id)
+    @OneToMany(() => Shipping, (shipping) => shipping.user, {
+        cascade: true,
+    })
     shippings: Shipping[];
 
     @UpdateDateColumn()
