@@ -106,3 +106,10 @@ export interface PostShippingRequest extends Request {
     auth: JWTPayload;
     body: ShippingData;
 }
+
+export interface CategoryData {
+    name: string;
+}
+export interface CreateCategoryRequest extends Request {
+    body: CategoryData;
+}
