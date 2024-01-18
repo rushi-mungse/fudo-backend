@@ -96,6 +96,26 @@ class ShippingController {
             return next(error);
         }
     }
+
+    async getShipping(req: AuthRequest, res: Response, next: NextFunction) {
+        const shippingId = req.params.shippingId;
+        if (isNaN(Number(shippingId)))
+            return next(createHttpError(400, "Shipping id is invalid!"));
+
+        const userId = req.auth.userId;
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            const shipping = await this.shippingService.findShippingById(
+                Number(shippingId),
+            );
+
+            return res.json({ userId, shipping });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default ShippingController;

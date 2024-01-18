@@ -53,4 +53,15 @@ router.get(
         ) as unknown as RequestHandler,
 );
 
+router.get(
+    "/:shippingId",
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        shippingController.getShipping(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
 export default router;
