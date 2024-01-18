@@ -4,6 +4,7 @@ import { errorHandlerMiddleware } from "./middlewares";
 import {
     authRouter,
     categoryRouter,
+    productRouter,
     shippingRouter,
     userRouter,
 } from "./routes";
@@ -19,6 +20,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/shipping", shippingRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/product", productRouter);
 
 app.use(errorHandlerMiddleware);
 

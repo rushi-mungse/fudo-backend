@@ -36,7 +36,7 @@ class Product {
     ingredients: string[];
 
     @ManyToMany(() => Category)
-    categories: Category[];
+    category: Category;
 
     @OneToMany(() => SizeAndPrice, (sizeAndPrice) => sizeAndPrice.id)
     sizeAndPrice: SizeAndPrice[];

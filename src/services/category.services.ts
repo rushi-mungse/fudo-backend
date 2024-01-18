@@ -22,6 +22,12 @@ class CategoryService {
     async deleteCategory(categoryId: number): Promise<void> {
         await this.categoryRepository.delete(categoryId);
     }
+
+    async findCategoryByName(categoryName: string): Promise<Category | null> {
+        return await this.categoryRepository.findOne({
+            where: { name: categoryName },
+        });
+    }
 }
 
 export default CategoryService;

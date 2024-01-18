@@ -4,3 +4,4 @@ export { default as NotificationService } from "./notification.services";
 export { default as TokenService } from "./token.services";
 export { default as ShippingService } from "./shipping.services";
 export { default as CategoryService } from "./category.services";
+export { default as ProductService } from "./product.services";
