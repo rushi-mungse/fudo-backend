@@ -232,5 +232,34 @@ describe("[GET] user/get/:userId", () => {
 
             expect(getUserResponse.statusCode).toBe(400);
         });
+
+        it("should return 403 status code if user is not admin", async () => {
+            // arrange
+            const tokenRepository = connection.getRepository(Token);
+
+            const accessToken = jwt.token({
+                userId: "1",
+                role: UserRole.CUSTOMER,
+            });
+
+            const refreshToken = new TokenService(
+                tokenRepository,
+            ).signRefreshToken({
+                userId: "1",
+                role: UserRole.CUSTOMER,
+                tokenId: "1",
+            });
+
+            // act
+            const getUserResponse = await request(app)
+                .get("/api/user/2")
+                .set("Cookie", [
+                    `accessToken=${accessToken}`,
+                    `refreshToken=${refreshToken}`,
+                ]);
+
+            // assert
+            expect(getUserResponse.statusCode).toBe(403);
+        });
     });
 });
