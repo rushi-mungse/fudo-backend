@@ -64,4 +64,16 @@ router.get(
         ) as unknown as RequestHandler,
 );
 
+router.post(
+    "/:shippingId",
+    postShippingValidator,
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        shippingController.updateShipping(
+            req as PostShippingRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
 export default router;

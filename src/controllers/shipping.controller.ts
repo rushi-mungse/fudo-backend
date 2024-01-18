@@ -116,6 +116,49 @@ class ShippingController {
             return next(error);
         }
     }
+
+    async updateShipping(
+        req: PostShippingRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const shippingId = req.params.shippingId;
+        if (isNaN(Number(shippingId)))
+            return next(createHttpError(400, "Invalid shipping id!"));
+
+        const result = validationResult(req);
+        if (!result.isEmpty())
+            return res.status(400).json({ error: result.array() });
+
+        const userId = req.auth.userId;
+        const { address, city, postalCode } = req.body;
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            const shipping = await this.shippingService.findShippingById(
+                Number(shippingId),
+            );
+            if (!shipping)
+                return next(
+                    createHttpError(400, "Shipping address not found!"),
+                );
+
+            shipping.address = address;
+            shipping.city = city;
+            shipping.postalCode = postalCode;
+
+            await this.shippingService.saveShipping(shipping);
+
+            return res.json({
+                shipping,
+                message: "Shipping address added successfully.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default ShippingController;
