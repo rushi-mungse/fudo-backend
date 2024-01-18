@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import { ShippingController } from "../controllers";
 import { checkAccessToken } from "../middlewares";
-import { PostShippingRequest } from "../types";
+import { AuthRequest, PostShippingRequest } from "../types";
 import { postShippingValidator } from "../validators/shipping";
 import { ShippingService, UserService } from "../services";
 import { AppDataSource } from "../config";
@@ -26,6 +26,17 @@ router.post(
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.postShipping(
             req as PostShippingRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.delete(
+    "/:shippingId",
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        shippingController.deleteShipping(
+            req as AuthRequest,
             res,
             next,
         ) as unknown as RequestHandler,

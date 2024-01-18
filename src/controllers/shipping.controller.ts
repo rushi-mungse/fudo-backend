@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { PostShippingRequest } from "../types";
+import { AuthRequest, PostShippingRequest } from "../types";
 import { validationResult } from "express-validator";
 import { ShippingService, UserService } from "../services";
 import createHttpError from "http-errors";
@@ -37,6 +37,44 @@ class ShippingController {
             return res.json({
                 user: { ...newUser, password: null },
                 message: "Shipping address added successfully.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async deleteShipping(req: AuthRequest, res: Response, next: NextFunction) {
+        const userId = req.auth.userId;
+
+        const shippingId = req.params.shippingId;
+        if (isNaN(Number(shippingId)))
+            return next(createHttpError(400, "Shipping id is invalid!"));
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            const shipping =
+                await this.shippingService.findShippingByIdWithRelations(
+                    Number(shippingId),
+                );
+            if (!shipping)
+                return next(
+                    createHttpError(400, "Shipping address not found!"),
+                );
+
+            if (shipping.user.id !== user.id)
+                return next(
+                    createHttpError(
+                        400,
+                        "This shipping address not belong to the user!",
+                    ),
+                );
+
+            await this.shippingService.deleteShippingById(Number(shippingId));
+            return res.json({
+                id: shippingId,
+                message: "Shipping address deleted successfully.",
             });
         } catch (error) {
             return next(error);

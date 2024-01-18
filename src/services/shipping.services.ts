@@ -8,6 +8,23 @@ class ShippingService {
     async saveShipping(shipping: ShippingData) {
         return await this.shippingRepository.save(shipping);
     }
+
+    async findShippingById(shippingId: number) {
+        return await this.shippingRepository.findOne({
+            where: { id: shippingId },
+        });
+    }
+
+    async deleteShippingById(shippingId: number) {
+        await this.shippingRepository.delete(shippingId);
+    }
+
+    async findShippingByIdWithRelations(shippingId: number) {
+        return await this.shippingRepository.findOne({
+            where: { id: shippingId },
+            relations: ["user"],
+        });
+    }
 }
 
 export default ShippingService;
