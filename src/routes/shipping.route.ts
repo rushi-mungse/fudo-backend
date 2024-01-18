@@ -42,4 +42,15 @@ router.delete(
         ) as unknown as RequestHandler,
 );
 
+router.get(
+    "/",
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        shippingController.getShippings(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
 export default router;

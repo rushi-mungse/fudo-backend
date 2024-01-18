@@ -80,6 +80,22 @@ class ShippingController {
             return next(error);
         }
     }
+
+    async getShippings(req: AuthRequest, res: Response, next: NextFunction) {
+        const userId = req.auth.userId;
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
+            const shippings = await this.shippingService.findShippings(
+                Number(userId),
+            );
+
+            return res.json({ userId, shippings });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default ShippingController;
