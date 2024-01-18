@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import { AppDataSource, logger } from "../config";
 import { UserController } from "../controllers";
-import { checkAccessToken, hashPermission, uploadFile } from "../middlewares";
+import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
 import { UserService, CredentialService } from "../services";
 import { User } from "../entity";
 import {
@@ -82,7 +82,7 @@ router.get(
     "/:userId",
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.getUser(req, res, next) as unknown as RequestHandler,
@@ -92,7 +92,7 @@ router.get(
     "/",
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.getUsers(req, res, next) as unknown as RequestHandler,
@@ -102,7 +102,7 @@ router.delete(
     "/:userId",
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.deleteUserByAdmin(
@@ -117,7 +117,7 @@ router.post(
     updateUserValidator,
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.updateUser(

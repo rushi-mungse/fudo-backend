@@ -5,7 +5,7 @@ import express, {
     RequestHandler,
 } from "express";
 import { ShippingController } from "../controllers";
-import { checkAccessToken, hashPermission } from "../middlewares";
+import { checkAccessToken, hasPermission } from "../middlewares";
 import { AuthRequest, PostShippingRequest } from "../types";
 import { postShippingValidator } from "../validators/shipping";
 import { ShippingService, UserService } from "../services";
@@ -81,7 +81,7 @@ router.get(
     "/admin/all-shippings",
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.getAllShippings(
@@ -95,7 +95,7 @@ router.delete(
     "/admin/:shippingId",
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.deleteShippingByAdmin(

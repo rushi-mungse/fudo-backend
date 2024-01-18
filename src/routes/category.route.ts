@@ -9,7 +9,7 @@ import { Category } from "../entity";
 import { UserRole } from "../constants";
 import { CategoryService } from "../services";
 import { CategoryController } from "../controllers";
-import { checkAccessToken, hashPermission } from "../middlewares";
+import { checkAccessToken, hasPermission } from "../middlewares";
 import { categoryValidator } from "../validators/category";
 
 const router = express.Router();
@@ -42,7 +42,7 @@ router.put(
     categoryValidator,
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         categoryController.create(req, res, next) as unknown as RequestHandler,
@@ -52,7 +52,7 @@ router.delete(
     "/:categoryId",
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         categoryController.deleteCategory(
@@ -67,7 +67,7 @@ router.post(
     categoryValidator,
     [
         checkAccessToken,
-        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+        hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         categoryController.updateCategory(
