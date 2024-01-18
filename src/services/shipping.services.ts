@@ -33,6 +33,10 @@ class ShippingService {
             where: { user: { id: userId } },
         });
     }
+
+    async getAllShippings(): Promise<Shipping[]> {
+        return await this.shippingRepository.find({ relations: ["user"] });
+    }
 }
 
 export default ShippingService;

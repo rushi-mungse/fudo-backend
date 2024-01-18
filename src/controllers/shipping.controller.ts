@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AuthRequest, PostShippingRequest } from "../types";
 import { validationResult } from "express-validator";
 import { ShippingService, UserService } from "../services";
@@ -154,6 +154,44 @@ class ShippingController {
             return res.json({
                 shipping,
                 message: "Shipping address added successfully.",
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async getAllShippings(req: Request, res: Response, next: NextFunction) {
+        try {
+            const shippings = await this.shippingService.getAllShippings();
+            return res.json({ shippings });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async deleteShippingByAdmin(
+        req: AuthRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const shippingId = req.params.shippingId;
+        if (isNaN(Number(shippingId)))
+            return next(createHttpError(400, "Shipping id is invalid!"));
+
+        try {
+            const shipping =
+                await this.shippingService.findShippingByIdWithRelations(
+                    Number(shippingId),
+                );
+            if (!shipping)
+                return next(
+                    createHttpError(400, "Shipping address not found!"),
+                );
+
+            await this.shippingService.deleteShippingById(Number(shippingId));
+            return res.json({
+                id: shippingId,
+                message: "Shipping address deleted successfully.",
             });
         } catch (error) {
             return next(error);

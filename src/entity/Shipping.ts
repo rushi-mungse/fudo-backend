@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -22,7 +23,7 @@ class Shipping {
     @Column()
     postalCode: string;
 
-    @ManyToOne(() => User, (user) => user.shippings)
+    @ManyToOne(() => User, (user) => user.shippings, { onDelete: "CASCADE" })
     user: User;
 
     @UpdateDateColumn()

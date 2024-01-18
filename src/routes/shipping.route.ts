@@ -5,12 +5,13 @@ import express, {
     RequestHandler,
 } from "express";
 import { ShippingController } from "../controllers";
-import { checkAccessToken } from "../middlewares";
+import { checkAccessToken, hashPermission } from "../middlewares";
 import { AuthRequest, PostShippingRequest } from "../types";
 import { postShippingValidator } from "../validators/shipping";
 import { ShippingService, UserService } from "../services";
 import { AppDataSource } from "../config";
 import { Shipping, User } from "../entity";
+import { UserRole } from "../constants";
 
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
@@ -71,6 +72,34 @@ router.post(
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.updateShipping(
             req as PostShippingRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.get(
+    "/admin/all-shippings",
+    [
+        checkAccessToken,
+        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        shippingController.getAllShippings(
+            req,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.delete(
+    "/admin/:shippingId",
+    [
+        checkAccessToken,
+        hashPermission([UserRole.ADMIN]) as unknown as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        shippingController.deleteShippingByAdmin(
+            req as AuthRequest,
             res,
             next,
         ) as unknown as RequestHandler,
