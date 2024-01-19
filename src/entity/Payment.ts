@@ -2,10 +2,12 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import { PaymentMethod } from "../constants";
+import Order from "./Order";
 
 @Entity({ name: "payments" })
 class Payment {
@@ -13,7 +15,7 @@ class Payment {
     id: number;
 
     @Column()
-    amount: string;
+    amount: number;
 
     @Column({ type: "enum", enum: PaymentMethod })
     method: string;
