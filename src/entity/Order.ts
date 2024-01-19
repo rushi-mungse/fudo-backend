@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
     OneToMany,
     OneToOne,
@@ -21,22 +20,18 @@ class Order {
     id: number;
 
     @ManyToOne(() => User)
-    @JoinColumn()
     user: User;
 
     @OneToMany(() => OrderItem, (orderItem) => orderItem.id)
-    @JoinColumn()
     orderItems: OrderItem[];
 
-    @Column({ type: "enum", enum: OrderStatus })
+    @Column({ type: "enum", enum: OrderStatus, default: OrderStatus.PENDING })
     status: string;
 
     @OneToOne(() => Shipping)
-    @JoinColumn()
     shipping: Shipping;
 
-    @OneToOne(() => Payment)
-    @JoinColumn()
+    @OneToOne(() => Payment, (payment) => payment.id)
     payment: Payment;
 
     @UpdateDateColumn()
