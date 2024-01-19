@@ -5,3 +5,6 @@ export { default as TokenService } from "./token.services";
 export { default as ShippingService } from "./shipping.services";
 export { default as CategoryService } from "./category.services";
 export { default as ProductService } from "./product.services";
+export { default as OrderItemservice } from "./orderItem.services";
+export { default as OrderService } from "./order.services";
+export { default as PaymentService } from "./payment.services";
