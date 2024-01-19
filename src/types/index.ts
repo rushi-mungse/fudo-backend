@@ -1,6 +1,13 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
-import { Category, User } from "../entity";
+import {
+    Category,
+    OrderItem,
+    Payment,
+    Product,
+    Shipping,
+    User,
+} from "../entity";
 
 export interface AuthRequest extends Request {
     auth: JWTPayload;
@@ -136,4 +143,34 @@ export interface ProductData {
     discount: number;
     ingredients: string[];
     category: Category;
+}
+
+export interface OrderItemData {
+    user: User;
+    product: Product;
+    quantity: number;
+}
+
+export interface CartData {
+    [key: string]: string;
+}
+
+export interface OrderItemRequest extends Request {
+    auth: JWTPayload;
+    body: {
+        cart: string;
+        shippingId: string;
+    };
+}
+
+export interface OrderData {
+    user: User;
+    orderItems: OrderItem[];
+    shipping: Shipping;
+    payment: Payment;
+}
+
+export interface PaumentData {
+    amount: number;
+    method: string;
 }
