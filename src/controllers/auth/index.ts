@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 import { validationResult } from "express-validator";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
-import { UserService, CredentialService, TokenService } from "../services";
+import { UserService, CredentialService, TokenService } from "../../services";
 import {
     AuthRequest,
     ForgetPasswordRequest,
@@ -11,7 +11,7 @@ import {
     SendOtpRequest,
     SetPasswordRequest,
     VerifyOtpRequest,
-} from "../types";
+} from "../../types";
 
 class AuthController {
     constructor(

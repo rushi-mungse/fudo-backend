@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { AuthRequest, PostShippingRequest } from "../types";
+import { AuthRequest, PostShippingRequest } from "../../types";
 import { validationResult } from "express-validator";
-import { ShippingService, UserService } from "../services";
+import { ShippingService, UserService } from "../../services";
 import createHttpError from "http-errors";
 
 class ShippingController {

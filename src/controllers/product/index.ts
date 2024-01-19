@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { CreateProductRequest } from "../types";
-import { CategoryService, ProductService } from "../services";
+import { CreateProductRequest } from "../../types";
+import { CategoryService, ProductService } from "../../services";
 
 class ProductController {
     constructor(

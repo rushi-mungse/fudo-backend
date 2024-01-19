@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { CategoryService } from "../services";
+import { CategoryService } from "../../services";
 import { validationResult } from "express-validator";
-import { CreateCategoryRequest } from "../types";
+import { CreateCategoryRequest } from "../../types";
 import createHttpError from "http-errors";
 
 class CategoryController {

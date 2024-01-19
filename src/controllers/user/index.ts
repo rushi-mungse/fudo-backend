@@ -2,13 +2,13 @@ import { Logger } from "winston";
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { CredentialService, UserService } from "../services";
+import { CredentialService, UserService } from "../../services";
 import {
     AuthRequest,
     ChangePasswordRequest,
     UpdateUserFullNameRequest,
     UpdateUserRequest,
-} from "../types";
+} from "../../types";
 
 class UserController {
     constructor(

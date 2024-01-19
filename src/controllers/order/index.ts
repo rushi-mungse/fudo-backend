@@ -7,10 +7,10 @@ import {
     ShippingService,
     UserService,
     PaymentService,
-} from "../services";
-import { CartData, OrderItemRequest } from "../types";
-import { OrderItem } from "../entity";
-import { PaymentMethod } from "../constants";
+} from "../../services";
+import { CartData, OrderItemRequest } from "../../types";
+import { OrderItem } from "../../entity";
+import { PaymentMethod } from "../../constants";
 
 class OrderController {
     constructor(
