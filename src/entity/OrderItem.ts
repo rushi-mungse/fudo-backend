@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -15,7 +14,6 @@ class OrderItem {
     id: number;
 
     @ManyToOne(() => Product)
-    @JoinColumn()
     product: Product;
 
     @Column()
