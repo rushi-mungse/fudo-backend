@@ -1,9 +1,9 @@
 import { Repository } from "typeorm";
 import { sign, verify } from "jsonwebtoken";
 import createHttpError from "http-errors";
-import { JWTPayload } from "../types";
-import { Token, User } from "../entity";
-import { PRIVATE_KEY, REFRESH_TOKEN_SECRET } from "../config";
+import { JWTPayload } from "../../types";
+import { Token, User } from "../../entity";
+import { PRIVATE_KEY, REFRESH_TOKEN_SECRET } from "../../config";
 
 class TokenService {
     constructor(private tokenRepository: Repository<Token>) {}

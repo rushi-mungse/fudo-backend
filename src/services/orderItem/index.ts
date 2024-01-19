@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
-import { OrderItem, Product } from "../entity";
-import { OrderItemData } from "../types";
+import { OrderItem, Product } from "../../entity";
+import { OrderItemData } from "../../types";
 import createHttpError from "http-errors";
-import ProductService from "./product.services";
+import ProductService from "../product";
 
 class OrderItemservice {
     constructor(

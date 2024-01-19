@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
-import { User } from "../entity";
-import { UserData } from "../types";
+import { User } from "../../entity";
+import { UserData } from "../../types";
 import createHttpError from "http-errors";
 
 class UserService {

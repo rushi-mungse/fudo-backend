@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
-import { Shipping } from "../entity";
-import { ShippingData } from "../types";
+import { Shipping } from "../../entity";
+import { ShippingData } from "../../types";
 
 class ShippingService {
     constructor(private shippingRepository: Repository<Shipping>) {}

@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
-import { Payment } from "../entity";
-import { PaumentData } from "../types";
+import { Payment } from "../../entity";
+import { PaumentData } from "../../types";
 
 class PaymentService {
     constructor(private paymentRepository: Repository<Payment>) {}

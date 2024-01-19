@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
-import { Category } from "../entity";
-import { CategoryData } from "../types";
+import { Category } from "../../entity";
+import { CategoryData } from "../../types";
 
 class CategoryService {
     constructor(private categoryRepository: Repository<Category>) {}
