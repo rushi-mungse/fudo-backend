@@ -39,7 +39,7 @@ class Product {
     category: Category;
 
     @OneToMany(() => SizeAndPrice, (sizeAndPrice) => sizeAndPrice.id)
-    sizeAndPrice: SizeAndPrice[];
+    sizeAndPrices: SizeAndPrice[];
 
     @UpdateDateColumn()
     updatedAt: number;
