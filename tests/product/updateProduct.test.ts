@@ -50,6 +50,7 @@ describe("[POST] /api/product/:productId", () => {
             const productRepository = connection.getRepository(Product);
 
             const category = await categoryRepository.save({ name: "pizza" });
+            await categoryRepository.save({ name: "pizza1" });
             await productRepository.save({ ...product, category });
 
             const adminAccessToken = jwt.token({
@@ -65,7 +66,7 @@ describe("[POST] /api/product/:productId", () => {
                 .field("description", "This is pizza food from heart.")
                 .field("discount", 20)
                 .field("availability", true)
-                .field("category", "pizza")
+                .field("category", "pizza1")
                 .field("currency", "IND")
                 .field("preparationTime", 50)
                 .field("ingredients", JSON.stringify(["protein"]))
