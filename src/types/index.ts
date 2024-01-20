@@ -6,6 +6,7 @@ import {
     Payment,
     Product,
     Shipping,
+    SizeAndPrice,
     User,
 } from "../entity";
 
@@ -129,8 +130,10 @@ export interface CreateProductRequest extends Request {
         availability: boolean;
         preparationTime: number;
         discount: number;
-        ingredients: string[];
+        ingredients: string;
         category: string;
+        sizeAndPrices: string;
+        currency: string;
     };
 }
 
@@ -143,6 +146,7 @@ export interface ProductData {
     discount: number;
     ingredients: string[];
     category: Category;
+    sizeAndPrices?: SizeAndPrice[];
 }
 
 export interface OrderItemData {
@@ -170,7 +174,17 @@ export interface OrderData {
     payment: Payment;
 }
 
-export interface PaumentData {
+export interface PaymentData {
     amount: number;
     method: string;
+}
+
+export interface SizeAndPriceData {
+    [key: string]: string;
+}
+
+export interface SizeAndPriceDataType {
+    size: string;
+    price: number;
+    currency: string;
 }
