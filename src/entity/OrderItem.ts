@@ -13,7 +13,7 @@ class OrderItem {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Product)
+    @ManyToOne(() => Product, { onDelete: "CASCADE" })
     product: Product;
 
     @Column()
