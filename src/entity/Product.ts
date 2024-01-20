@@ -35,7 +35,7 @@ class Product {
     @Column("simple-array")
     ingredients: string[];
 
-    @ManyToMany(() => Category)
+    @ManyToMany(() => Category, (category) => category.product)
     category: Category;
 
     @OneToMany(() => SizeAndPrice, (sizeAndPrice) => sizeAndPrice.id)
