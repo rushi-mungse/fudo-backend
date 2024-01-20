@@ -41,4 +41,16 @@ export default checkSchema({
         notEmpty: true,
         errorMessage: "Product ingredients is required!",
     },
+
+    sizeAndPrices: {
+        trim: true,
+        notEmpty: true,
+        errorMessage: "Sizes ans Prices is required!",
+    },
+
+    currency: {
+        trim: true,
+        notEmpty: true,
+        errorMessage: "Sizes ans Prices is required!",
+    },
 });
