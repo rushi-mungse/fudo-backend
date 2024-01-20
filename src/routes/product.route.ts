@@ -15,7 +15,10 @@ import { AppDataSource } from "../config";
 import { Category, Product, SizeAndPrice } from "../entity";
 import { UserRole } from "../constants";
 import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
-import { createProductValidator } from "../validators/product";
+import {
+    createProductValidator,
+    updateProductValidator,
+} from "../validators/product";
 
 const router = express.Router();
 
@@ -89,7 +92,7 @@ router.post(
         checkAccessToken,
         uploadFile.single("image"),
         hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
-        createProductValidator as unknown as RequestHandler,
+        updateProductValidator as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
         productController.updateProduct(
