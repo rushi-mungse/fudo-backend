@@ -1,13 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { CreateProductRequest } from "../../types";
-import { CategoryService, ProductService } from "../../services";
+import { CreateProductRequest, SizeAndPriceData } from "../../types";
+import {
+    CategoryService,
+    ProductService,
+    SizeAndPriceService,
+} from "../../services";
+import { SizeAndPrice } from "../../entity";
 
 class ProductController {
     constructor(
         private productService: ProductService,
         private categoryService: CategoryService,
+        private sizeAndPriceService: SizeAndPriceService,
     ) {}
 
     async createProduct(
@@ -29,7 +35,9 @@ class ProductController {
             availability,
             ingredients,
             preparationTime,
+            sizeAndPrices: sizeAndPricesJson,
             category: categoryName,
+            currency,
         } = req.body;
 
         try {
@@ -40,15 +48,31 @@ class ProductController {
                     createHttpError(400, "Product category not found!"),
                 );
 
+            const sizeAndPrices: SizeAndPrice[] = [];
+            const sizeAndPriceObject = JSON.parse(
+                sizeAndPricesJson,
+            ) as SizeAndPriceData;
+
+            for (const size in sizeAndPriceObject) {
+                const sizeAndPrice =
+                    await this.sizeAndPriceService.saveSizeAndPrice({
+                        size,
+                        price: Number(sizeAndPriceObject[size]),
+                        currency,
+                    });
+                sizeAndPrices.push(sizeAndPrice);
+            }
+
             const product = await this.productService.saveProduct({
                 name,
                 description,
                 discount: Number(discount),
                 availability: String(availability) === "true" ? true : false,
-                ingredients,
+                ingredients: JSON.parse(ingredients) as string[],
                 preparationTime: Number(preparationTime),
                 imageUrl: file.path,
                 category,
+                sizeAndPrices,
             });
 
             res.status(201).json({
@@ -151,7 +175,7 @@ class ProductController {
             product.discount = Number(discount);
             product.availability =
                 String(availability) === "true" ? true : false;
-            product.ingredients = ingredients;
+            product.ingredients = JSON.parse(ingredients) as string[];
             product.preparationTime = Number(preparationTime);
             // product.category = category;
             if (file) product.imageUrl = file.path;
