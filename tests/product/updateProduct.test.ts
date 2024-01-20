@@ -34,6 +34,13 @@ describe("[POST] /api/product/:productId", () => {
         discount: 40,
         category: "pizza",
         ingredients: ["Protein"],
+        currency: "IND",
+    };
+
+    const sizeAndPrices = {
+        small: 100,
+        medium: 200,
+        large: 300,
     };
 
     describe("Given all fields", () => {
@@ -59,11 +66,12 @@ describe("[POST] /api/product/:productId", () => {
                 .field("discount", 20)
                 .field("availability", true)
                 .field("category", "pizza")
+                .field("currency", "IND")
                 .field("preparationTime", 50)
-                .field("ingredients", [`protein`, `vitamine`]);
+                .field("ingredients", JSON.stringify(["protein"]))
+                .field("sizeAndPrices", JSON.stringify(sizeAndPrices));
 
             // assert
-            console.log(updateProductResponse.body);
             expect(updateProductResponse.statusCode).toBe(200);
         });
 
@@ -88,9 +96,10 @@ describe("[POST] /api/product/:productId", () => {
                 .field("description", "This is pizza food from heart.")
                 .field("discount", 20)
                 .field("availability", true)
-                .field("category", "pizza")
+                .field("currency", "IND")
                 .field("preparationTime", 50)
-                .field("ingredients", [`protein`, `vitamine`]);
+                .field("ingredients", JSON.stringify(["protein"]))
+                .field("sizeAndPrices", JSON.stringify(sizeAndPrices));
 
             // assert
             expect(
@@ -122,8 +131,10 @@ describe("[POST] /api/product/:productId", () => {
                 .field("discount", 20)
                 .field("availability", true)
                 .field("category", "pizza")
+                .field("currency", "IND")
                 .field("preparationTime", 50)
-                .field("ingredients", [`protein`, `vitamine`]);
+                .field("ingredients", JSON.stringify(["protein"]))
+                .field("sizeAndPrices", JSON.stringify(sizeAndPrices));
 
             // assert
             const products = await productRepository.find();

@@ -34,6 +34,13 @@ describe("[POST] /api/product", () => {
         discount: 40,
         category: "pizza",
         ingredients: ["protein"],
+        currency: "IND",
+    };
+
+    const sizeAndPrices = {
+        small: 100,
+        medium: 200,
+        large: 300,
     };
 
     describe("Given all fields", () => {
@@ -63,8 +70,10 @@ describe("[POST] /api/product", () => {
                 .field("discount", 10)
                 .field("availability", true)
                 .field("category", "pizza")
+                .field("currency", "IND")
                 .field("preparationTime", 50)
-                .field("ingredients", ["protein"])
+                .field("ingredients", JSON.stringify(["protein"]))
+                .field("sizeAndPrices", JSON.stringify(sizeAndPrices))
                 .attach("image", testPathfile);
 
             // assert
@@ -97,8 +106,10 @@ describe("[POST] /api/product", () => {
                 .field("discount", 10)
                 .field("availability", true)
                 .field("category", "pizza")
+                .field("currency", "IND")
                 .field("preparationTime", 50)
-                .field("ingredients", ["protein"])
+                .field("ingredients", JSON.stringify(["protein"]))
+                .field("sizeAndPrices", JSON.stringify(sizeAndPrices))
                 .attach("image", testPathfile);
 
             // assert
@@ -135,8 +146,10 @@ describe("[POST] /api/product", () => {
                 .field("discount", 10)
                 .field("availability", true)
                 .field("category", "pizza")
+                .field("currency", "IND")
                 .field("preparationTime", 50)
-                .field("ingredients", ["protein"])
+                .field("ingredients", JSON.stringify(["protein"]))
+                .field("sizeAndPrices", JSON.stringify(sizeAndPrices))
                 .attach("image", testPathfile);
 
             // assert
