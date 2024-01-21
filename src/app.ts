@@ -10,6 +10,7 @@ import {
     shippingRouter,
     userRouter,
     orderRouter,
+    sizeRouter,
 } from "./routes";
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/shipping", shippingRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/product", productRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/size", sizeRouter);
 
 app.use(errorHandlerMiddleware);
 
