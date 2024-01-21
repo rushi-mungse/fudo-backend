@@ -4,3 +4,4 @@ export { default as ShippingController } from "./shipping";
 export { default as CategoryController } from "./category";
 export { default as ProductController } from "./product";
 export { default as OrderController } from "./order";
+export { default as SizeController } from "./size";
