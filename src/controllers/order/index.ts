@@ -7,6 +7,7 @@ import {
     ShippingService,
     UserService,
     PaymentService,
+    ProductService,
 } from "../../services";
 import { CartData, OrderItemRequest } from "../../types";
 import { OrderItem } from "../../entity";
@@ -15,6 +16,7 @@ import { PaymentMethod } from "../../constants";
 class OrderController {
     constructor(
         private userService: UserService,
+        private productSevice: ProductService,
         private orderService: OrderService,
         private orderItemService: OrderItemservice,
         private shippingService: ShippingService,
@@ -52,17 +54,28 @@ class OrderController {
             let totalAmount = 0;
 
             for (const productId in itemData) {
-                const quantity = itemData[productId];
-                const orderItem = await this.orderItemService.createOrderItem(
+                const product = await this.productSevice.findProductById(
                     Number(productId),
-                    Number(quantity),
                 );
-                totalAmount += 0; // calculate
+                if (!product)
+                    return next(createHttpError(400, "Product not found!"));
+
+                const quantity = itemData[productId].quantity;
+                const size = itemData[productId].size;
+                const orderItem = await this.orderItemService.saveOrderItem({
+                    product,
+                    quantity,
+                });
+                const prices = orderItem.product.prices;
+                prices.forEach((price) => {
+                    if (price.size.size === size)
+                        totalAmount += price.price * quantity;
+                });
                 orderItems.push(orderItem);
             }
 
             const payment = await this.paymentService.orderPayment({
-                amount: 1000,
+                amount: totalAmount,
                 method: PaymentMethod.NET_BANKING,
             });
 
