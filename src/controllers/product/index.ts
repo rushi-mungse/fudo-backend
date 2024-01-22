@@ -4,16 +4,18 @@ import { validationResult } from "express-validator";
 import { CreateProductRequest, SizeAndPriceData } from "../../types";
 import {
     CategoryService,
+    PriceService,
     ProductService,
-    SizeAndPriceService,
+    SizeService,
 } from "../../services";
-import { SizeAndPrice } from "../../entity";
+import { Price } from "../../entity";
 
 class ProductController {
     constructor(
         private productService: ProductService,
         private categoryService: CategoryService,
-        private sizeAndPriceService: SizeAndPriceService,
+        private sizeService: SizeService,
+        private priceService: PriceService,
     ) {}
 
     async createProduct(
@@ -48,19 +50,27 @@ class ProductController {
                     createHttpError(400, "Product category not found!"),
                 );
 
-            const sizeAndPrices: SizeAndPrice[] = [];
+            const prices: Price[] = [];
             const sizeAndPriceObject = JSON.parse(
                 sizeAndPricesJson,
             ) as SizeAndPriceData;
 
-            for (const size in sizeAndPriceObject) {
-                const sizeAndPrice =
-                    await this.sizeAndPriceService.saveSizeAndPrice({
-                        size,
-                        price: Number(sizeAndPriceObject[size]),
-                        currency,
-                    });
-                sizeAndPrices.push(sizeAndPrice);
+            for (const sizeName in sizeAndPriceObject) {
+                const productPrice = Number(sizeAndPriceObject[sizeName]);
+                const size =
+                    await this.sizeService.findSizeBySizeName(sizeName);
+                if (!size)
+                    return next(
+                        createHttpError(400, "Product Size not found!"),
+                    );
+
+                const price = await this.priceService.savePrice({
+                    size,
+                    price: productPrice,
+                    currency,
+                });
+
+                prices.push(price);
             }
 
             const product = await this.productService.saveProduct({
@@ -71,8 +81,8 @@ class ProductController {
                 ingredients: JSON.parse(ingredients) as string[],
                 preparationTime: Number(preparationTime),
                 imageUrl: file.path,
-                category,
-                sizeAndPrices,
+                categories: [category],
+                prices,
             });
 
             res.status(201).json({
