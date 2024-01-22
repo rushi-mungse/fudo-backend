@@ -4,3 +4,4 @@ export { default as shippingRouter } from "./shipping.route";
 export { default as categoryRouter } from "./category.route";
 export { default as productRouter } from "./product.route";
 export { default as orderRouter } from "./order.route";
+export { default as sizeRouter } from "./size.route";
