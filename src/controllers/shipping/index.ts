@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import { AuthRequest, PostShippingRequest } from "../../types";
-import { validationResult } from "express-validator";
-import { ShippingService, UserService } from "../../services";
+import { Response, NextFunction } from "express";
 import createHttpError from "http-errors";
+import { validationResult } from "express-validator";
+import { AuthRequest, PostShippingRequest } from "../../types";
+import { ShippingService, UserService } from "../../services";
 
 class ShippingController {
     constructor(
@@ -160,8 +160,12 @@ class ShippingController {
         }
     }
 
-    async getAllShippings(req: Request, res: Response, next: NextFunction) {
+    async getAllShippings(req: AuthRequest, res: Response, next: NextFunction) {
+        const userId = req.auth.userId;
         try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return next(createHttpError(400, "User not found!"));
+
             const shippings = await this.shippingService.getAllShippings();
             return res.json({ shippings });
         } catch (error) {
