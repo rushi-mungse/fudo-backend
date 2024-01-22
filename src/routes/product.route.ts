@@ -8,11 +8,12 @@ import { ProductController } from "../controllers";
 import { CreateProductRequest } from "../types";
 import {
     CategoryService,
+    PriceService,
     ProductService,
-    SizeAndPriceService,
+    SizeService,
 } from "../services";
 import { AppDataSource } from "../config";
-import { Category, Product, SizeAndPrice } from "../entity";
+import { Category, Price, Product, Size } from "../entity";
 import { UserRole } from "../constants";
 import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
 import {
@@ -25,15 +26,19 @@ const router = express.Router();
 const categoryRepository = AppDataSource.getRepository(Category);
 const categoryService = new CategoryService(categoryRepository);
 
-const sizeAndPriceRepository = AppDataSource.getRepository(SizeAndPrice);
-const sizeAndPriceService = new SizeAndPriceService(sizeAndPriceRepository);
+const sizeRepository = AppDataSource.getRepository(Size);
+const sizeService = new SizeService(sizeRepository);
+
+const priceRepository = AppDataSource.getRepository(Price);
+const priceService = new PriceService(priceRepository);
 
 const productRepository = AppDataSource.getRepository(Product);
 const productService = new ProductService(productRepository);
 const productController = new ProductController(
     productService,
     categoryService,
-    sizeAndPriceService,
+    sizeService,
+    priceService,
 );
 
 router.post(

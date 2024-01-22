@@ -8,4 +8,5 @@ export { default as ProductService } from "./product";
 export { default as OrderItemservice } from "./orderItem";
 export { default as OrderService } from "./order";
 export { default as PaymentService } from "./payment";
-export { default as SizeAndPriceService } from "./sizeAndPrice";
+export { default as PriceService } from "./price";
+export { default as SizeService } from "./size";

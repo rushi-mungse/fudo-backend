@@ -85,7 +85,7 @@ router.get(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.getAllShippings(
-            req,
+            req as AuthRequest,
             res,
             next,
         ) as unknown as RequestHandler,

@@ -10,7 +10,9 @@ class ProductService {
     }
 
     async getProducts() {
-        return await this.productRepository.find();
+        return await this.productRepository.find({
+            relations: ["categories", "prices"],
+        });
     }
 
     async deleteProduct(productId: number) {
@@ -20,6 +22,7 @@ class ProductService {
     async findProductById(productId: number) {
         return await this.productRepository.findOne({
             where: { id: productId },
+            relations: ["categories", "prices.size"],
         });
     }
 }

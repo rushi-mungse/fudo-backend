@@ -4,9 +4,10 @@ import {
     Category,
     OrderItem,
     Payment,
+    Price,
     Product,
     Shipping,
-    SizeAndPrice,
+    Size,
     User,
 } from "../entity";
 
@@ -145,18 +146,22 @@ export interface ProductData {
     preparationTime: number;
     discount: number;
     ingredients: string[];
-    category: Category;
-    sizeAndPrices?: SizeAndPrice[];
+    categories: Category[];
+    prices: Price[];
 }
 
 export interface OrderItemData {
-    user: User;
     product: Product;
     quantity: number;
 }
 
+export interface ItemData {
+    quantity: number;
+    size: string;
+}
+
 export interface CartData {
-    [key: string]: string;
+    [key: string]: ItemData;
 }
 
 export interface OrderItemRequest extends Request {
@@ -183,8 +188,15 @@ export interface SizeAndPriceData {
     [key: string]: string;
 }
 
-export interface SizeAndPriceDataType {
-    size: string;
+export interface PriceData {
     price: number;
+    size: Size;
     currency: string;
+}
+
+export interface AddProductSizeRequest extends Request {
+    auth: JWTPayload;
+    body: {
+        size: string;
+    };
 }

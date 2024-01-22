@@ -44,8 +44,8 @@ class ShippingService {
     ): Promise<Shipping | null> {
         return await this.shippingRepository.findOne({
             where: {
-                user: { id: userId },
                 id: shippingId,
+                user: { id: userId },
             },
         });
     }
