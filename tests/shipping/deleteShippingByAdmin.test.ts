@@ -3,10 +3,10 @@ import { DataSource } from "typeorm";
 import createJWKSMock from "mock-jwks";
 import app from "../../src/app";
 import { AppDataSource } from "../../src/config";
-import { User } from "../../src/entity";
+import { Shipping, User } from "../../src/entity";
 import { UserRole } from "../../src/constants";
 
-describe("[GET] /api/shipping", () => {
+describe("[DELETE] /api/shipping/admin/:shippingId", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJWKSMock>;
 
@@ -49,7 +49,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "1",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -58,12 +58,12 @@ describe("[GET] /api/shipping", () => {
                 .send(shippingData);
 
             //  act
-            const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+            const deleteShippingResponse = await request(app)
+                .delete("/api/shipping/admin/1")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
-            expect(getShippingsResponse.statusCode).toBe(200);
+            expect(deleteShippingResponse.statusCode).toBe(200);
         });
 
         it("should returns the json data", async () => {
@@ -73,7 +73,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "1",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -82,13 +82,13 @@ describe("[GET] /api/shipping", () => {
                 .send(shippingData);
 
             //  act
-            const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+            const deleteShippingResponse = await request(app)
+                .delete("/api/shipping/admin/1")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
             expect(
-                (getShippingsResponse.headers as Record<string, string>)[
+                (deleteShippingResponse.headers as Record<string, string>)[
                     "content-type"
                 ],
             ).toEqual(expect.stringContaining("json"));
@@ -101,7 +101,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "2",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -110,22 +110,22 @@ describe("[GET] /api/shipping", () => {
                 .send(shippingData);
 
             //  act
-            const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+            const deleteShippingResponse = await request(app)
+                .delete("/api/shipping/admin/1")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
-            expect(getShippingsResponse.statusCode).toBe(400);
+            expect(deleteShippingResponse.statusCode).toBe(400);
         });
 
-        it("should return shipping data", async () => {
+        it("should returns the 400 status code if shipping address not found", async () => {
             // arrange
             const userRepository = connection.getRepository(User);
             await userRepository.save(userData);
 
             const accessToken = jwt.token({
                 userId: "1",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -134,12 +134,63 @@ describe("[GET] /api/shipping", () => {
                 .send(shippingData);
 
             //  act
-            const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+            const deleteShippingResponse = await request(app)
+                .delete("/api/shipping/admin/2")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
-            expect(getShippingsResponse.body.shippings).toHaveLength(1);
+            expect(deleteShippingResponse.statusCode).toBe(400);
+        });
+
+        it("should shipping address persist in database", async () => {
+            // arrange
+            const userRepository = connection.getRepository(User);
+            await userRepository.save(userData);
+
+            const accessToken = jwt.token({
+                userId: "1",
+                role: UserRole.ADMIN,
+            });
+
+            await request(app)
+                .post("/api/shipping")
+                .set("Cookie", [`accessToken=${accessToken}`])
+                .send(shippingData);
+
+            //  act
+            await request(app)
+                .delete("/api/shipping/admin/1")
+                .set("Cookie", [`accessToken=${accessToken}`]);
+
+            // assert
+            const shippingRepository = connection.getRepository(Shipping);
+            const shippings = await shippingRepository.find();
+            expect(shippings).toHaveLength(0);
+        });
+
+        it("should return 400 status code if shipping id is invalid", async () => {
+            // arrange
+            const userRepository = connection.getRepository(User);
+            await userRepository.save(userData);
+
+            const accessToken = jwt.token({
+                userId: "1",
+                role: UserRole.ADMIN,
+            });
+
+            await request(app)
+                .post("/api/shipping")
+                .set("Cookie", [`accessToken=${accessToken}`])
+                .send(shippingData);
+
+            //  act
+            const deleteShippingResponse = await request(app)
+                .delete("/api/shipping/admin/rwerw")
+                .set("Cookie", [`accessToken=${accessToken}`]);
+
+            // assert
+
+            expect(deleteShippingResponse.statusCode).toBe(400);
         });
     });
 });

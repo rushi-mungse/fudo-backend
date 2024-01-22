@@ -5,7 +5,7 @@ import path from "path";
 import app from "../../src/app";
 import { AppDataSource } from "../../src/config";
 import { UserRole } from "../../src/constants";
-import { Product } from "../../src/entity";
+import { Product, Size } from "../../src/entity";
 
 describe("[POST] /api/product", () => {
     let connection: DataSource;
@@ -45,6 +45,11 @@ describe("[POST] /api/product", () => {
 
     describe("Given all fields", () => {
         it("should returns the 201 status code if all ok", async () => {
+            const sizeRepository = await connection.getRepository(Size);
+            await sizeRepository.save({ size: "small" });
+            await sizeRepository.save({ size: "medium" });
+            await sizeRepository.save({ size: "large" });
+
             // arrange
             const adminAccessToken = jwt.token({
                 userId: "1",

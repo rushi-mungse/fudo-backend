@@ -6,7 +6,7 @@ import { AppDataSource } from "../../src/config";
 import { User } from "../../src/entity";
 import { UserRole } from "../../src/constants";
 
-describe("[GET] /api/shipping", () => {
+describe("[GET] /api/shipping/admin/all-shippings", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJWKSMock>;
 
@@ -49,7 +49,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "1",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -59,7 +59,7 @@ describe("[GET] /api/shipping", () => {
 
             //  act
             const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+                .get("/api/shipping/admin/all-shippings")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
@@ -73,7 +73,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "1",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -83,7 +83,7 @@ describe("[GET] /api/shipping", () => {
 
             //  act
             const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+                .get("/api/shipping/admin/all-shippings")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
@@ -101,7 +101,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "2",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -111,7 +111,7 @@ describe("[GET] /api/shipping", () => {
 
             //  act
             const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+                .get("/api/shipping/admin/all-shippings")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
@@ -125,7 +125,7 @@ describe("[GET] /api/shipping", () => {
 
             const accessToken = jwt.token({
                 userId: "1",
-                role: UserRole.CUSTOMER,
+                role: UserRole.ADMIN,
             });
 
             await request(app)
@@ -135,7 +135,7 @@ describe("[GET] /api/shipping", () => {
 
             //  act
             const getShippingsResponse = await request(app)
-                .get("/api/shipping")
+                .get("/api/shipping/admin/all-shippings")
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // assert
