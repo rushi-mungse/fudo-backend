@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinTable,
     ManyToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -13,8 +14,9 @@ class Category {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToMany(() => Product, (product) => product.category)
-    product: Product[];
+    @ManyToMany(() => Product, (product) => product.categories)
+    @JoinTable()
+    products: Product[];
 
     @Column()
     name: string;
