@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { Category, SizeAndPrice } from "./";
+import { Category, Price } from "./";
 
 @Entity({ name: "products" })
 class Product {
@@ -35,11 +35,11 @@ class Product {
     @Column("simple-array")
     ingredients: string[];
 
-    @ManyToMany(() => Category, (category) => category.product)
-    category: Category;
+    @ManyToMany(() => Category, (category) => category.products)
+    categories: Category[];
 
-    @OneToMany(() => SizeAndPrice, (sizeAndPrice) => sizeAndPrice.id)
-    sizeAndPrices: SizeAndPrice[];
+    @OneToMany(() => Price, (price) => price.product)
+    prices: Price[];
 
     @UpdateDateColumn()
     updatedAt: number;
