@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import createHttpError from "http-errors";
-import { HASH_SECRET } from "../../config";
+import { HASH_SECRET } from "../../config/config";
 
 export default class CredentialService {
     async hashData(data: string) {

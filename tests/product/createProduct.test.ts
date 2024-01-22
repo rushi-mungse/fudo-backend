@@ -87,6 +87,11 @@ describe("[POST] /api/product", () => {
 
         it("should return json data", async () => {
             // arrange
+            const sizeRepository = await connection.getRepository(Size);
+            await sizeRepository.save({ size: "small" });
+            await sizeRepository.save({ size: "medium" });
+            await sizeRepository.save({ size: "large" });
+
             const adminAccessToken = jwt.token({
                 userId: "1",
                 role: UserRole.ADMIN,
@@ -127,6 +132,11 @@ describe("[POST] /api/product", () => {
 
         it("should persist product in database", async () => {
             // arrange
+            const sizeRepository = await connection.getRepository(Size);
+            await sizeRepository.save({ size: "small" });
+            await sizeRepository.save({ size: "medium" });
+            await sizeRepository.save({ size: "large" });
+
             const adminAccessToken = jwt.token({
                 userId: "1",
                 role: UserRole.ADMIN,

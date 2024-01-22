@@ -9,7 +9,7 @@ import { checkAccessToken, hasPermission } from "../middlewares";
 import { AuthRequest, PostShippingRequest } from "../types";
 import { postShippingValidator } from "../validators/shipping";
 import { ShippingService, UserService } from "../services";
-import { AppDataSource } from "../config";
+import { AppDataSource } from "../config/config";
 import { Shipping, User } from "../entity";
 import { UserRole } from "../constants";
 

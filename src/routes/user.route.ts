@@ -4,7 +4,7 @@ import express, {
     NextFunction,
     RequestHandler,
 } from "express";
-import { AppDataSource, logger } from "../config";
+import { AppDataSource, logger } from "../config/config";
 import { UserController } from "../controllers";
 import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
 import { UserService, CredentialService } from "../services";

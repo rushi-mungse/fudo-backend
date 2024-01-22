@@ -2,7 +2,7 @@ import { Request } from "express";
 import { expressjwt } from "express-jwt";
 import createHttpError from "http-errors";
 import { CookieType, JWTPayload } from "../types";
-import { AppDataSource, logger, REFRESH_TOKEN_SECRET } from "../config";
+import { AppDataSource, logger, REFRESH_TOKEN_SECRET } from "../config/config";
 import { Token } from "../entity";
 
 export default expressjwt({

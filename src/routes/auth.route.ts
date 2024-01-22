@@ -20,7 +20,7 @@ import {
     VerifyOtpRequest,
 } from "../types";
 import { CredentialService, TokenService, UserService } from "../services";
-import { AppDataSource, logger } from "../config";
+import { AppDataSource, logger } from "../config/config";
 import { Token, User } from "../entity";
 import {
     checkAccessToken,

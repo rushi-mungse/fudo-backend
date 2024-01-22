@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError } from "http-errors";
-import { logger } from "../config";
+import { logger } from "../config/config";
 
 export default function (
     err: HttpError,
