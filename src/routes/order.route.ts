@@ -43,6 +43,7 @@ const orderRepository = AppDataSource.getRepository(Order);
 const orderService = new OrderService(orderRepository);
 const orderController = new OrderController(
     userService,
+    productService,
     orderService,
     orderItemService,
     shippingService,
