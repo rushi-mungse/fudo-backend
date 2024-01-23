@@ -2,15 +2,20 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import { PaymentMethod } from "../constants";
+import { Order } from "./";
 
 @Entity({ name: "payments" })
 class Payment {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @OneToOne(() => Order, (order) => order.payment)
+    order: Order;
 
     @Column()
     amount: number;

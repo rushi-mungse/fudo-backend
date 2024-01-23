@@ -2,14 +2,11 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
-    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import Product from "./Product";
-import { Size } from "./";
+import { Size, Product } from "./";
 
 @Entity({ name: "prices" })
 class Price {

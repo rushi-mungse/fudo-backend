@@ -6,7 +6,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import User from "./User";
+import { User } from "./";
 
 @Entity({ name: "shippings" })
 class Shipping {
@@ -15,6 +15,9 @@ class Shipping {
 
     @Column("text")
     address: string;
+
+    @Column()
+    country: string;
 
     @Column()
     city: string;

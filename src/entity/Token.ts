@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import User from "./User";
+import { User } from "./";
 
 @Entity({ name: "tokens" })
 class Token {
