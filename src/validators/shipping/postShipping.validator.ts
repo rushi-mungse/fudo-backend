@@ -13,6 +13,12 @@ export default checkSchema({
         errorMessage: "City is required!",
     },
 
+    country: {
+        trim: true,
+        notEmpty: true,
+        errorMessage: "Country is required!",
+    },
+
     postalCode: {
         trim: true,
         notEmpty: true,
