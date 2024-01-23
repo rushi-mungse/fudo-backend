@@ -5,6 +5,9 @@ import express, {
     Response,
 } from "express";
 import { AuthController } from "../controllers";
+import { CredentialService, TokenService, UserService } from "../services";
+import { AppDataSource, logger } from "../config";
+import { Token, User } from "../entity";
 import {
     forgetPasswordValidator,
     loginValidator,
@@ -12,29 +15,29 @@ import {
     verifyOtpValidator,
 } from "../validators/auth";
 import {
-    AuthRequest,
-    ForgetPasswordRequest,
-    LoginRequest,
-    SendOtpRequest,
-    SetPasswordRequest,
-    VerifyOtpRequest,
-} from "../types";
-import { CredentialService, TokenService, UserService } from "../services";
-import { AppDataSource, logger } from "../config/config";
-import { Token, User } from "../entity";
-import {
     checkAccessToken,
     checkInvalidRefreshToken,
     checkRefreshToken,
 } from "../middlewares";
+import {
+    AuthRequest,
+    ForgetPasswordRequestBody,
+    LoginRequestBody,
+    SendOtpRequestBody,
+    SetPasswordRequestBody,
+    VerifyOtpRequestBody,
+} from "../types/type";
 
 const router = express.Router();
 
-const userRepository = AppDataSource.getRepository(User);
-const tokenRepository = AppDataSource.getRepository(Token);
-const userService = new UserService(userRepository);
-const tokenService = new TokenService(tokenRepository);
 const credentialService = new CredentialService();
+
+const userRepository = AppDataSource.getRepository(User);
+const userService = new UserService(userRepository);
+
+const tokenRepository = AppDataSource.getRepository(Token);
+const tokenService = new TokenService(tokenRepository);
+
 const authController = new AuthController(
     logger,
     userService,
@@ -47,7 +50,7 @@ router.post(
     sendOtpValidator,
     (req: Request, res: Response, next: NextFunction) =>
         authController.sendOtp(
-            req as SendOtpRequest,
+            req as AuthRequest<SendOtpRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -58,7 +61,7 @@ router.post(
     verifyOtpValidator,
     (req: Request, res: Response, next: NextFunction) =>
         authController.verifyOtp(
-            req as VerifyOtpRequest,
+            req as AuthRequest<VerifyOtpRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -90,8 +93,12 @@ router.post(
     "/login",
     loginValidator,
     [checkInvalidRefreshToken],
-    (req: LoginRequest, res: Response, next: NextFunction) =>
-        authController.login(req, res, next) as unknown as RequestHandler,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.login(
+            req as AuthRequest<LoginRequestBody>,
+            res,
+            next,
+        ) as unknown as RequestHandler,
 );
 
 router.get(
@@ -110,7 +117,7 @@ router.post(
     forgetPasswordValidator,
     (req: Request, res: Response, next: NextFunction) =>
         authController.forgetPassword(
-            req as ForgetPasswordRequest,
+            req as AuthRequest<ForgetPasswordRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -121,7 +128,7 @@ router.post(
     verifyOtpValidator,
     (req: Request, res: Response, next: NextFunction) =>
         authController.setPassword(
-            req as SetPasswordRequest,
+            req as AuthRequest<SetPasswordRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,

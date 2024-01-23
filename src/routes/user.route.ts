@@ -10,22 +10,24 @@ import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
 import { UserService, CredentialService } from "../services";
 import { User } from "../entity";
 import {
-    AuthRequest,
-    ChangePasswordRequest,
-    UpdateUserFullNameRequest,
-    UpdateUserRequest,
-} from "../types";
-import {
     changePasswordValidator,
     updateUserFullNameValidator,
     updateUserValidator,
 } from "../validators/user";
 import { UserRole } from "../constants";
+import {
+    AuthRequest,
+    ChangePasswordRequestBody,
+    UpdateFullNameRequestBody,
+    UpdateUserByAdminRequestBody,
+} from "../types/type";
 
 const router = express.Router();
+
+const credentialService = new CredentialService();
+
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository);
-const credentialService = new CredentialService();
 const userController = new UserController(
     logger,
     userService,
@@ -38,7 +40,7 @@ router.post(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         userController.updateUserFullName(
-            req as UpdateUserFullNameRequest,
+            req as AuthRequest<UpdateFullNameRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -50,7 +52,7 @@ router.post(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         userController.changePassword(
-            req as ChangePasswordRequest,
+            req as AuthRequest<ChangePasswordRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -85,7 +87,11 @@ router.get(
         hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
-        userController.getUser(req, res, next) as unknown as RequestHandler,
+        userController.getUser(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
 );
 
 router.get(
@@ -95,7 +101,11 @@ router.get(
         hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
-        userController.getUsers(req, res, next) as unknown as RequestHandler,
+        userController.getUsers(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
 );
 
 router.delete(
@@ -121,7 +131,7 @@ router.post(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         userController.updateUser(
-            req as UpdateUserRequest,
+            req as AuthRequest<UpdateUserByAdminRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,

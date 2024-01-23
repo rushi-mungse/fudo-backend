@@ -9,7 +9,7 @@ import { SizeController } from "../controllers";
 import { SizeService } from "../services";
 import { AppDataSource } from "../config/config";
 import { checkAccessToken } from "../middlewares";
-import { AddProductSizeRequest } from "../types";
+import { AddProductSizeRequestBody, AuthRequest } from "../types/type";
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.post(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         sizeController.addProductSize(
-            req as AddProductSizeRequest,
+            req as AuthRequest<AddProductSizeRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,

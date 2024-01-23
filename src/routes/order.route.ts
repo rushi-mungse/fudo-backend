@@ -16,8 +16,8 @@ import {
 } from "../services";
 import { AppDataSource } from "../config/config";
 import { checkAccessToken } from "../middlewares";
-import { OrderItemRequest } from "../types";
 import { orderItemsValidator } from "../validators/order";
+import { AuthRequest, OrderItemsRequestBody } from "../types/type";
 
 const router = express.Router();
 
@@ -34,10 +34,7 @@ const shippingRepository = AppDataSource.getRepository(Shipping);
 const shippingService = new ShippingService(shippingRepository);
 
 const orderItemRepository = AppDataSource.getRepository(OrderItem);
-const orderItemService = new OrderItemservice(
-    productService,
-    orderItemRepository,
-);
+const orderItemService = new OrderItemservice(orderItemRepository);
 
 const orderRepository = AppDataSource.getRepository(Order);
 const orderService = new OrderService(orderRepository);
@@ -56,7 +53,7 @@ router.post(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         orderController.addOrderItems(
-            req as OrderItemRequest,
+            req as AuthRequest<OrderItemsRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,

@@ -6,17 +6,19 @@ import express, {
 } from "express";
 import { ShippingController } from "../controllers";
 import { checkAccessToken, hasPermission } from "../middlewares";
-import { AuthRequest, PostShippingRequest } from "../types";
 import { postShippingValidator } from "../validators/shipping";
 import { ShippingService, UserService } from "../services";
 import { AppDataSource } from "../config/config";
 import { Shipping, User } from "../entity";
 import { UserRole } from "../constants";
+import { AuthRequest, ShippingData } from "../types/type";
 
 const router = express.Router();
+
 const userRepository = AppDataSource.getRepository(User);
-const shippingRepository = AppDataSource.getRepository(Shipping);
 const userService = new UserService(userRepository);
+
+const shippingRepository = AppDataSource.getRepository(Shipping);
 const shippingService = new ShippingService(shippingRepository);
 const shippingController = new ShippingController(userService, shippingService);
 
@@ -26,7 +28,7 @@ router.post(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.postShipping(
-            req as PostShippingRequest,
+            req as AuthRequest<ShippingData>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -71,7 +73,7 @@ router.post(
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
         shippingController.updateShipping(
-            req as PostShippingRequest,
+            req as AuthRequest<ShippingData>,
             res,
             next,
         ) as unknown as RequestHandler,

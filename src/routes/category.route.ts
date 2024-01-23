@@ -11,6 +11,7 @@ import { CategoryService } from "../services";
 import { CategoryController } from "../controllers";
 import { checkAccessToken, hasPermission } from "../middlewares";
 import { categoryValidator } from "../validators/category";
+import { AuthRequest, CreateCategoryRequestBody } from "../types/type";
 
 const router = express.Router();
 const categoryRepository = AppDataSource.getRepository(Category);
@@ -20,11 +21,7 @@ const categoryController = new CategoryController(categoryService);
 router.get(
     "/",
     (req, res, next) =>
-        categoryController.getCategories(
-            req,
-            res,
-            next,
-        ) as unknown as RequestHandler,
+        categoryController.gets(req, res, next) as unknown as RequestHandler,
 );
 
 router.get(
@@ -45,7 +42,11 @@ router.put(
         hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
-        categoryController.create(req, res, next) as unknown as RequestHandler,
+        categoryController.create(
+            req as AuthRequest<CreateCategoryRequestBody>,
+            res,
+            next,
+        ) as unknown as RequestHandler,
 );
 
 router.delete(
@@ -55,11 +56,7 @@ router.delete(
         hasPermission([UserRole.ADMIN]) as unknown as RequestHandler,
     ],
     (req: Request, res: Response, next: NextFunction) =>
-        categoryController.deleteCategory(
-            req,
-            res,
-            next,
-        ) as unknown as RequestHandler,
+        categoryController.delete(req, res, next) as unknown as RequestHandler,
 );
 
 router.post(
@@ -71,7 +68,7 @@ router.post(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         categoryController.updateCategory(
-            req,
+            req as AuthRequest<CreateCategoryRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,

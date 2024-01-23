@@ -5,7 +5,6 @@ import express, {
     Response,
 } from "express";
 import { ProductController } from "../controllers";
-import { CreateProductRequest } from "../types";
 import {
     CategoryService,
     PriceService,
@@ -20,6 +19,7 @@ import {
     createProductValidator,
     updateProductValidator,
 } from "../validators/product";
+import { AuthRequest, ProductRequestBody } from "../types/type";
 
 const router = express.Router();
 
@@ -51,7 +51,7 @@ router.post(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         productController.createProduct(
-            req as CreateProductRequest,
+            req as AuthRequest<ProductRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -85,7 +85,7 @@ router.delete(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         productController.deleteProduct(
-            req,
+            req as AuthRequest,
             res,
             next,
         ) as unknown as RequestHandler,
@@ -101,7 +101,7 @@ router.post(
     ],
     (req: Request, res: Response, next: NextFunction) =>
         productController.updateProduct(
-            req as CreateProductRequest,
+            req as AuthRequest<ProductRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,
