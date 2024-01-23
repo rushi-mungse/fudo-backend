@@ -60,9 +60,6 @@ class TokenService implements TokenServiceType<Token, TokenData> {
     async delete(tokenId: number): Promise<void> {
         await this.tokenRepository.delete(tokenId);
     }
-
-    // const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
-    // const expiresAt = new Date(Date.now() + MS_IN_YEAR);
 }
 
 export default TokenService;

@@ -135,8 +135,8 @@ class AuthController {
             };
 
             const accessToken = this.tokenService.signAccessToken(payload);
-            //FIXME: currect
-            const expiresAt = new Date();
+            const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
+            const expiresAt = new Date(Date.now() + MS_IN_YEAR);
             const token = await this.tokenService.save({ user, expiresAt });
             const refreshToken = this.tokenService.signRefreshToken({
                 ...payload,
@@ -236,8 +236,8 @@ class AuthController {
             };
 
             const accessToken = this.tokenService.signAccessToken(payload);
-            //FIXME: correct
-            const expiresAt = new Date();
+            const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
+            const expiresAt = new Date(Date.now() + MS_IN_YEAR);
             const token = await this.tokenService.save({ user, expiresAt });
             const refreshToken = this.tokenService.signRefreshToken({
                 ...payload,
@@ -292,8 +292,8 @@ class AuthController {
             };
 
             const accessToken = this.tokenService.signAccessToken(payload);
-            //FIXME:
-            const expiresAt = new Date();
+            const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
+            const expiresAt = new Date(Date.now() + MS_IN_YEAR);
             const token = await this.tokenService.save({ user, expiresAt });
             const refreshToken = this.tokenService.signRefreshToken({
                 ...payload,
