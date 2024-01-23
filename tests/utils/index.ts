@@ -1,4 +1,3 @@
-// to check jwt token is valid
 export const isJWT = (token: string | null): boolean => {
     if (token === null) return false;
     const parts = token.split(".");
