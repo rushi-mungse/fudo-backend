@@ -166,7 +166,7 @@ describe("[POST] /api/user/update-full-name", () => {
                 role: UserRole.CUSTOMER,
             });
 
-            const updateFullNameResponse = await request(app)
+            await request(app)
                 .post(`/api/user/update-full-name`)
                 .set("Cookie", [`accessToken=${accessToken}`])
                 .send({ fullName: "Jenny Doe" });

@@ -29,7 +29,7 @@ describe("[GET] /api/category/:categoryId", () => {
         it("should returns the 200 status code if all ok", async () => {
             // arrange
             const categoryRepository = connection.getRepository(Category);
-            const ct = await categoryRepository.save({ name: "pizza" });
+            await categoryRepository.save({ name: "pizza" });
 
             const adminAccessToken = jwt.token({
                 userId: "1",

@@ -4,7 +4,6 @@ import { AppDataSource } from "../../../src/config";
 import app from "../../../src/app";
 import { Token, User } from "../../../src/entity";
 import { UserRole } from "./../../../src/constants";
-import { UserData } from "../../../src/types/type";
 import { getTokens, isJWT } from "../../utils";
 
 describe("[POST] /api/auth/register/verify-otp", () => {

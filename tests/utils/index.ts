@@ -18,7 +18,7 @@ export const isJWT = (token: string | null): boolean => {
 export const getTokens = (
     response: Response,
 ): { accessToken: string | null; refreshToken: string | null } => {
-    var accessToken: string | null = null;
+    let accessToken: string | null = null;
     let refreshToken: string | null = null;
 
     const cookies =

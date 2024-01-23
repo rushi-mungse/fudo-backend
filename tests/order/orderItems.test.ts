@@ -12,7 +12,6 @@ import {
     User,
 } from "../../src/entity";
 import { UserRole } from "../../src/constants";
-import { PriceService } from "../../src/services";
 import { ShippingData } from "../../src/types/type";
 
 describe("[POST] /api/order", () => {

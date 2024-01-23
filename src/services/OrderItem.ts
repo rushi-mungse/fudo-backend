@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
-import { OrderItem, Product } from "../entity";
-import { OrderItemData, ProductData, Service } from "../types/type";
+import { OrderItem } from "../entity";
+import { OrderItemData, Service } from "../types/type";
 
 class OrderItemservice implements Service<OrderItem, OrderItemData> {
     constructor(private orderItemRepository: Repository<OrderItem>) {}

@@ -82,7 +82,7 @@ class ProductController {
                 name,
                 description,
                 discount: Number(discount),
-                availability: String(availability) === "true" ? true : false,
+                availability: availability === "true" ? true : false,
                 ingredients: JSON.parse(ingredients) as string[],
                 preparationTime: Number(preparationTime),
                 imageUrl: file.path,
@@ -190,11 +190,9 @@ class ProductController {
             product.name = name;
             product.description = description;
             product.discount = Number(discount);
-            product.availability =
-                String(availability) === "true" ? true : false;
+            product.availability = availability === "true" ? true : false;
             product.ingredients = JSON.parse(ingredients) as string[];
             product.preparationTime = Number(preparationTime);
-            // product.category = category;
             if (file) product.imageUrl = file.path;
 
             await this.productService.save(product);

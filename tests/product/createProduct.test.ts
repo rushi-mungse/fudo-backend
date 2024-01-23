@@ -153,7 +153,7 @@ describe("[POST] /api/product", () => {
                 .send({ name: "pizza" });
 
             // act
-            const response = await request(app)
+            await request(app)
                 .post(`/api/product`)
                 .set("Cookie", [`accessToken=${adminAccessToken}`])
                 .field("name", "pizza")
