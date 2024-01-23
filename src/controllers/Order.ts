@@ -8,7 +8,7 @@ import {
     CartData,
     OrderData,
     OrderItemData,
-    OrderItemsRequestBody,
+    AddOrderRequestBody,
     PaymentData,
     ProductData,
     Service,
@@ -28,8 +28,8 @@ class OrderController {
         private paymentService: Service<Payment, PaymentData>,
     ) {}
 
-    async addOrderItems(
-        req: AuthRequest<OrderItemsRequestBody>,
+    async addOrder(
+        req: AuthRequest<AddOrderRequestBody>,
         res: Response,
         next: NextFunction,
     ) {

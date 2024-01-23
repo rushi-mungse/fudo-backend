@@ -17,7 +17,7 @@ import {
 import { AppDataSource } from "../config";
 import { checkAccessToken } from "../middlewares";
 import { orderItemsValidator } from "../validators/order";
-import { AuthRequest, OrderItemsRequestBody } from "../types/type";
+import { AuthRequest, AddOrderRequestBody } from "../types/type";
 
 const router = express.Router();
 
@@ -52,8 +52,8 @@ router.post(
     orderItemsValidator,
     [checkAccessToken],
     (req: Request, res: Response, next: NextFunction) =>
-        orderController.addOrderItems(
-            req as AuthRequest<OrderItemsRequestBody>,
+        orderController.addOrder(
+            req as AuthRequest<AddOrderRequestBody>,
             res,
             next,
         ) as unknown as RequestHandler,

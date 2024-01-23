@@ -212,7 +212,7 @@ export interface CreateCategoryRequestBody {
     name: string;
 }
 
-export interface OrderItemsRequestBody {
+export interface AddOrderRequestBody {
     cart: string;
     shippingId: number;
 }
