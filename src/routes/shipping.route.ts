@@ -8,7 +8,7 @@ import { ShippingController } from "../controllers";
 import { checkAccessToken, hasPermission } from "../middlewares";
 import { postShippingValidator } from "../validators/shipping";
 import { ShippingService, UserService } from "../services";
-import { AppDataSource } from "../config/config";
+import { AppDataSource } from "../config";
 import { Shipping, User } from "../entity";
 import { UserRole } from "../constants";
 import { AuthRequest, ShippingData } from "../types/type";

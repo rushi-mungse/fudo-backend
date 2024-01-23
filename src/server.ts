@@ -1,5 +1,5 @@
 import app from "./app";
-import { AppDataSource, PORT, logger } from "./config/config";
+import { AppDataSource, PORT, logger } from "./config";
 
 const startServer = async () => {
     try {

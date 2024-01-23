@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { GetVerificationKey, expressjwt } from "express-jwt";
 import jwksClient from "jwks-rsa";
-import { JWKS_URL } from "../config/config";
+import { JWKS_URL } from "../config";
 import { CookieData } from "../types/type";
 
 export default expressjwt({

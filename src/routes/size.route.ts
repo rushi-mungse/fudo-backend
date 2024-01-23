@@ -7,7 +7,7 @@ import express, {
 import { Size } from "../entity";
 import { SizeController } from "../controllers";
 import { SizeService } from "../services";
-import { AppDataSource } from "../config/config";
+import { AppDataSource } from "../config";
 import { checkAccessToken } from "../middlewares";
 import { AddProductSizeRequestBody, AuthRequest } from "../types/type";
 

@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 import { TokenService } from "../services";
-import { AppDataSource } from "../config/config";
+import { AppDataSource } from "../config";
 import createHttpError from "http-errors";
 import { Token } from "../entity";
 import { CookieData } from "../types/type";

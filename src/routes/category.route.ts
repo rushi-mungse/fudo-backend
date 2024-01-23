@@ -4,7 +4,7 @@ import express, {
     RequestHandler,
     Response,
 } from "express";
-import { AppDataSource } from "../config/config";
+import { AppDataSource } from "../config";
 import { Category } from "../entity";
 import { UserRole } from "../constants";
 import { CategoryService } from "../services";

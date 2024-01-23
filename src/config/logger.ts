@@ -1,5 +1,5 @@
 import winston from "winston";
-import { NODE_ENV } from "./config";
+import { NODE_ENV } from "./";
 
 export default winston.createLogger({
     level: "info",

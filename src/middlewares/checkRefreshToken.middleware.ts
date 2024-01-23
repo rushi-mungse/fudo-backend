@@ -1,7 +1,5 @@
 import { Request } from "express";
 import { expressjwt } from "express-jwt";
-import createHttpError from "http-errors";
-import { CookieType, JWTPayload } from "../types";
 import { AppDataSource, logger, REFRESH_TOKEN_SECRET } from "../config";
 import { Token } from "../entity";
 import { CookieData, TJwtPayload } from "../types/type";

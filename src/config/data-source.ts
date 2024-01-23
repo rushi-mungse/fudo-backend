@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { DB_HOST, DB_PASSWORD, DB_PORT, DB_USERNAME, DB_NAME } from "./config";
+import { DB_HOST, DB_PASSWORD, DB_PORT, DB_USERNAME, DB_NAME } from "./";
 
 export default new DataSource({
     type: "postgres",

@@ -14,7 +14,7 @@ import {
     ShippingService,
     UserService,
 } from "../services";
-import { AppDataSource } from "../config/config";
+import { AppDataSource } from "../config";
 import { checkAccessToken } from "../middlewares";
 import { orderItemsValidator } from "../validators/order";
 import { AuthRequest, OrderItemsRequestBody } from "../types/type";

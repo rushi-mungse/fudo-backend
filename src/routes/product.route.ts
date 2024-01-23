@@ -11,7 +11,7 @@ import {
     ProductService,
     SizeService,
 } from "../services";
-import { AppDataSource } from "../config/config";
+import { AppDataSource } from "../config";
 import { Category, Price, Product, Size } from "../entity";
 import { UserRole } from "../constants";
 import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
