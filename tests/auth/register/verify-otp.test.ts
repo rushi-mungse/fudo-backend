@@ -4,7 +4,7 @@ import { AppDataSource } from "../../../src/config";
 import app from "../../../src/app";
 import { Token, User } from "../../../src/entity";
 import { UserRole } from "./../../../src/constants";
-import { UserData } from "../../../src/types";
+import { UserData } from "../../../src/types/type";
 import { getTokens, isJWT } from "../../utils";
 
 describe("[POST] /api/auth/register/verify-otp", () => {
@@ -195,9 +195,7 @@ describe("[POST] /api/auth/register/verify-otp", () => {
                     otp: sendOtpResponse.body.otp,
                 });
 
-            expect((verifyOtpResponse.body.user as UserData).role).toBe(
-                UserRole.CUSTOMER,
-            );
+            expect(verifyOtpResponse.body.user.role).toBe(UserRole.CUSTOMER);
         });
 
         it("should be persist token in database", async () => {

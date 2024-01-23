@@ -3,8 +3,17 @@ import { DataSource } from "typeorm";
 import createJWKSMock from "mock-jwks";
 import app from "../../src/app";
 import { AppDataSource } from "../../src/config";
-import { Category, Product, Shipping, User } from "../../src/entity";
+import {
+    Category,
+    Price,
+    Product,
+    Shipping,
+    Size,
+    User,
+} from "../../src/entity";
 import { UserRole } from "../../src/constants";
+import { PriceService } from "../../src/services";
+import { ShippingData } from "../../src/types/type";
 
 describe("[POST] /api/order", () => {
     let connection: DataSource;
@@ -36,7 +45,7 @@ describe("[POST] /api/order", () => {
     };
 
     const orderItemsData = {
-        cart: JSON.stringify({ "1": 1 }),
+        cart: JSON.stringify({ "1": { quantity: 4, size: "small" } }),
         shippingId: "1",
     };
 
@@ -51,10 +60,11 @@ describe("[POST] /api/order", () => {
         imageUrl: "dummy.png",
     };
 
-    const shippingData = {
+    const shippingData: Omit<ShippingData, "user"> = {
         address: "Near ZP school",
         city: "Barshi",
         postalCode: "134334",
+        country: "India",
     };
 
     describe("All fields are given", () => {
@@ -64,14 +74,26 @@ describe("[POST] /api/order", () => {
             const productRepository = connection.getRepository(Product);
             const categoryRepository = connection.getRepository(Category);
             const shippingRepository = connection.getRepository(Shipping);
+            const sizeRepository = connection.getRepository(Size);
+            const priceRepository = connection.getRepository(Price);
 
             const category = await categoryRepository.save({ name: "pizza" });
             const shipping = await shippingRepository.save(shippingData);
-            const product = await productRepository.save({
+            const size = await sizeRepository.save({ size: "small" });
+            const price = await priceRepository.save({
+                price: 300,
+                currency: "IND",
+                sizes: [size],
+            });
+            await productRepository.save({
                 ...productData,
+                price,
                 category,
             });
-            const user = await userRepository.save({ ...userData, shipping });
+            await userRepository.save({
+                ...userData,
+                shippings: [shipping],
+            });
 
             const accessToken = jwt.token({
                 userId: "1",
@@ -84,7 +106,6 @@ describe("[POST] /api/order", () => {
                 .set("Cookie", [`accessToken=${accessToken}`])
                 .send(orderItemsData);
 
-            console.log(postShippingResponse.body);
             // assert
             expect(postShippingResponse.statusCode).toBe(200);
         });

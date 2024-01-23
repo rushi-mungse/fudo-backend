@@ -5,6 +5,7 @@ import app from "../../src/app";
 import { AppDataSource } from "../../src/config";
 import { Shipping, User } from "../../src/entity";
 import { UserRole } from "../../src/constants";
+import { ShippingData } from "../../src/types/type";
 
 describe("[DELETE] /api/shipping/:shippingId", () => {
     let connection: DataSource;
@@ -35,10 +36,11 @@ describe("[DELETE] /api/shipping/:shippingId", () => {
         password: "secret@password",
     };
 
-    const shippingData = {
+    const shippingData: Omit<ShippingData, "user"> = {
         address: "Near ZP school",
         city: "Barshi",
         postalCode: "134334",
+        country: "India",
     };
 
     describe("All fields are given", () => {
