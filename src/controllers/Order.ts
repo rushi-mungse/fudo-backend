@@ -1,30 +1,35 @@
 import { Response, NextFunction } from "express";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
+import { PaymentMethod } from "../constants";
+import { Order, OrderItem, Payment, Product, Shipping, User } from "../entity";
 import {
-    OrderItemservice,
-    OrderService,
-    ShippingService,
-    UserService,
-    PaymentService,
-    ProductService,
-} from "../../services";
-import { CartData, OrderItemRequest } from "../../types";
-import { OrderItem } from "../../entity";
-import { PaymentMethod } from "../../constants";
+    AuthRequest,
+    CartData,
+    OrderData,
+    OrderItemData,
+    OrderItemsRequestBody,
+    PaymentData,
+    ProductData,
+    Service,
+    ShippingData,
+    ShippingServiceType,
+    UserData,
+    UserServiceType,
+} from "../types/type";
 
 class OrderController {
     constructor(
-        private userService: UserService,
-        private productSevice: ProductService,
-        private orderService: OrderService,
-        private orderItemService: OrderItemservice,
-        private shippingService: ShippingService,
-        private paymentService: PaymentService,
+        private userService: UserServiceType<User, UserData>,
+        private productSevice: Service<Product, ProductData>,
+        private orderService: Service<Order, OrderData>,
+        private orderItemService: Service<OrderItem, OrderItemData>,
+        private shippingService: ShippingServiceType<Shipping, ShippingData>,
+        private paymentService: Service<Payment, PaymentData>,
     ) {}
 
     async addOrderItems(
-        req: OrderItemRequest,
+        req: AuthRequest<OrderItemsRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -36,12 +41,12 @@ class OrderController {
         const { cart, shippingId } = req.body;
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            const shipping = await this.shippingService.findShippingWithUserId(
-                Number(shippingId),
+            const shipping = await this.shippingService.getsShippingsByUserId(
                 Number(userId),
+                Number(shippingId),
             );
             if (!shipping)
                 return next(
@@ -54,7 +59,7 @@ class OrderController {
             let totalAmount = 0;
 
             for (const productId in itemData) {
-                const product = await this.productSevice.findProductById(
+                const product = await this.productSevice.getById(
                     Number(productId),
                 );
                 if (!product)
@@ -62,7 +67,7 @@ class OrderController {
 
                 const quantity = itemData[productId].quantity;
                 const size = itemData[productId].size;
-                const orderItem = await this.orderItemService.saveOrderItem({
+                const orderItem = await this.orderItemService.save({
                     product,
                     quantity,
                 });
@@ -74,12 +79,12 @@ class OrderController {
                 orderItems.push(orderItem);
             }
 
-            const payment = await this.paymentService.orderPayment({
+            const payment = await this.paymentService.save({
                 amount: totalAmount,
                 method: PaymentMethod.NET_BANKING,
             });
 
-            const order = await this.orderService.saveOrder({
+            const order = await this.orderService.save({
                 user,
                 orderItems,
                 shipping,

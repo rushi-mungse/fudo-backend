@@ -2,23 +2,26 @@ import { Logger } from "winston";
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { CredentialService, UserService } from "../../services";
+import { User } from "../entity";
 import {
     AuthRequest,
-    ChangePasswordRequest,
-    UpdateUserFullNameRequest,
-    UpdateUserRequest,
-} from "../../types";
+    ChangePasswordRequestBody,
+    CredentialServiceType,
+    Service,
+    UpdateFullNameRequestBody,
+    UpdateUserByAdminRequestBody,
+    UserData,
+} from "../types/type";
 
 class UserController {
     constructor(
         private logger: Logger,
-        private userService: UserService,
-        private credentialService: CredentialService,
+        private userService: Service<User, UserData>,
+        private credentialService: CredentialServiceType,
     ) {}
 
     async updateUserFullName(
-        req: UpdateUserFullNameRequest,
+        req: AuthRequest<UpdateFullNameRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -30,15 +33,15 @@ class UserController {
         const { fullName } = req.body;
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
             user.fullName = fullName;
-            await this.userService.saveUser(user);
+            await this.userService.save(user);
 
             return res.json({
                 message: "Updated user full name successfully.",
-                user: { ...user, password: null },
+                user,
             });
         } catch (error) {
             return next(error);
@@ -46,7 +49,7 @@ class UserController {
     }
 
     async changePassword(
-        req: ChangePasswordRequest,
+        req: AuthRequest<ChangePasswordRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -58,7 +61,7 @@ class UserController {
         const { newPassword, oldPassword } = req.body;
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
             const hashPassword = user.password;
@@ -74,7 +77,7 @@ class UserController {
                 await this.credentialService.hashData(newPassword);
 
             user.password = newHashPassword;
-            await this.userService.saveUser(user);
+            await this.userService.save(user);
 
             return res.json({ message: "User password changed successfully" });
         } catch (error) {
@@ -86,10 +89,10 @@ class UserController {
         const userId = req.auth.userId;
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            await this.userService.deleteUserById(Number(userId));
+            await this.userService.delete(Number(userId));
 
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
@@ -113,11 +116,11 @@ class UserController {
         if (!file) return next(createHttpError(400, "User picture not found!"));
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
             user.avatar = file.path;
-            await this.userService.saveUser(user);
+            await this.userService.save(user);
             return res.json({
                 user,
                 message: "User profile picture updated successfully.",
@@ -127,23 +130,23 @@ class UserController {
         }
     }
 
-    async getUser(req: Request, res: Response, next: NextFunction) {
+    async getUser(req: AuthRequest, res: Response, next: NextFunction) {
         const userId = req.params.userId;
         if (isNaN(Number(userId)))
             return next(createHttpError(400, "Invalid param id!"));
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
-            return res.json({ user: { ...user, password: null } });
+            return res.json({ user });
         } catch (error) {
             return next(error);
         }
     }
 
-    async getUsers(req: Request, res: Response, next: NextFunction) {
+    async getUsers(req: AuthRequest, res: Response, next: NextFunction) {
         try {
-            const users = await this.userService.getAllUsers();
+            const users = await this.userService.gets();
             return res.json({ users });
         } catch (error) {
             return next(error);
@@ -156,10 +159,10 @@ class UserController {
             return next(createHttpError(400, "Invalid user id!"));
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            await this.userService.deleteUserById(Number(userId));
+            await this.userService.delete(Number(userId));
             return res.json({
                 id: userId,
                 message: "User deleted successfully.",
@@ -170,7 +173,7 @@ class UserController {
     }
 
     async updateUser(
-        req: UpdateUserRequest,
+        req: AuthRequest<UpdateUserByAdminRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -184,16 +187,16 @@ class UserController {
 
         const { role, status } = req.body;
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
             user.role = role;
             user.status = status;
 
-            await this.userService.saveUser(user);
+            await this.userService.save(user);
 
             return res.json({
-                user: { ...user, password: null },
+                user,
                 message: "User updated successufully.",
             });
         } catch (error) {

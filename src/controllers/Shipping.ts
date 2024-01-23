@@ -1,17 +1,23 @@
 import { Response, NextFunction } from "express";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { AuthRequest, PostShippingRequest } from "../../types";
-import { ShippingService, UserService } from "../../services";
+import { Shipping, User } from "../entity";
+import {
+    AuthRequest,
+    ShippingData,
+    ShippingServiceType,
+    UserData,
+    UserServiceType,
+} from "../types/type";
 
 class ShippingController {
     constructor(
-        private userService: UserService,
-        private shippingService: ShippingService,
+        private userService: UserServiceType<User, UserData>,
+        private shippingService: ShippingServiceType<Shipping, ShippingData>,
     ) {}
 
     async postShipping(
-        req: PostShippingRequest,
+        req: AuthRequest<ShippingData>,
         res: Response,
         next: NextFunction,
     ) {
@@ -20,22 +26,26 @@ class ShippingController {
             return res.status(400).json({ error: result.array() });
 
         const userId = req.auth.userId;
-        const { address, city, postalCode } = req.body;
+        const { address, city, postalCode, country } = req.body;
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            await this.shippingService.saveShipping({
+            const savedShipping = await this.shippingService.save({
                 address,
+                country,
                 city,
                 postalCode,
                 user,
             });
 
-            const newUser = await this.userService.findUserById(Number(userId));
+            const shipping = await this.shippingService.getById(
+                savedShipping.id,
+            );
+
             return res.json({
-                user: { ...newUser, password: null },
+                shipping,
                 message: "Shipping address added successfully.",
             });
         } catch (error) {
@@ -51,13 +61,12 @@ class ShippingController {
             return next(createHttpError(400, "Shipping id is invalid!"));
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            const shipping =
-                await this.shippingService.findShippingByIdWithRelations(
-                    Number(shippingId),
-                );
+            const shipping = await this.shippingService.getById(
+                Number(shippingId),
+            );
             if (!shipping)
                 return next(
                     createHttpError(400, "Shipping address not found!"),
@@ -71,7 +80,7 @@ class ShippingController {
                     ),
                 );
 
-            await this.shippingService.deleteShippingById(Number(shippingId));
+            await this.shippingService.delete(Number(shippingId));
             return res.json({
                 id: shippingId,
                 message: "Shipping address deleted successfully.",
@@ -84,10 +93,10 @@ class ShippingController {
     async getShippings(req: AuthRequest, res: Response, next: NextFunction) {
         const userId = req.auth.userId;
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            const shippings = await this.shippingService.findShippings(
+            const shippings = await this.shippingService.getsByUserId(
                 Number(userId),
             );
 
@@ -104,10 +113,10 @@ class ShippingController {
 
         const userId = req.auth.userId;
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            const shipping = await this.shippingService.findShippingById(
+            const shipping = await this.shippingService.getById(
                 Number(shippingId),
             );
 
@@ -118,7 +127,7 @@ class ShippingController {
     }
 
     async updateShipping(
-        req: PostShippingRequest,
+        req: AuthRequest<ShippingData>,
         res: Response,
         next: NextFunction,
     ) {
@@ -131,13 +140,13 @@ class ShippingController {
             return res.status(400).json({ error: result.array() });
 
         const userId = req.auth.userId;
-        const { address, city, postalCode } = req.body;
+        const { address, city, postalCode, country } = req.body;
 
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            const shipping = await this.shippingService.findShippingById(
+            const shipping = await this.shippingService.getById(
                 Number(shippingId),
             );
             if (!shipping)
@@ -147,9 +156,10 @@ class ShippingController {
 
             shipping.address = address;
             shipping.city = city;
+            shipping.country = country;
             shipping.postalCode = postalCode;
 
-            await this.shippingService.saveShipping(shipping);
+            await this.shippingService.save(shipping);
 
             return res.json({
                 shipping,
@@ -163,10 +173,10 @@ class ShippingController {
     async getAllShippings(req: AuthRequest, res: Response, next: NextFunction) {
         const userId = req.auth.userId;
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            const shippings = await this.shippingService.getAllShippings();
+            const shippings = await this.shippingService.gets();
             return res.json({ shippings });
         } catch (error) {
             return next(error);
@@ -183,16 +193,15 @@ class ShippingController {
             return next(createHttpError(400, "Shipping id is invalid!"));
 
         try {
-            const shipping =
-                await this.shippingService.findShippingByIdWithRelations(
-                    Number(shippingId),
-                );
+            const shipping = await this.shippingService.getById(
+                Number(shippingId),
+            );
             if (!shipping)
                 return next(
                     createHttpError(400, "Shipping address not found!"),
                 );
 
-            await this.shippingService.deleteShippingById(Number(shippingId));
+            await this.shippingService.delete(Number(shippingId));
             return res.json({
                 id: shippingId,
                 message: "Shipping address deleted successfully.",

@@ -1,25 +1,30 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { CreateProductRequest, SizeAndPriceData } from "../../types";
+import { Category, Price, Product, Size } from "../entity";
 import {
-    CategoryService,
-    PriceService,
-    ProductService,
-    SizeService,
-} from "../../services";
-import { Price } from "../../entity";
+    AuthRequest,
+    CategoryData,
+    CategoryServiceType,
+    PriceData,
+    ProductData,
+    ProductRequestBody,
+    ProductSizeData,
+    ProductSizeServiceType,
+    Service,
+    SizeAndPriceData,
+} from "../types/type";
 
 class ProductController {
     constructor(
-        private productService: ProductService,
-        private categoryService: CategoryService,
-        private sizeService: SizeService,
-        private priceService: PriceService,
+        private productService: Service<Product, ProductData>,
+        private categoryService: CategoryServiceType<Category, CategoryData>,
+        private sizeService: ProductSizeServiceType<Size, ProductSizeData>,
+        private priceService: Service<Price, PriceData>,
     ) {}
 
     async createProduct(
-        req: CreateProductRequest,
+        req: AuthRequest<ProductRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -37,14 +42,14 @@ class ProductController {
             availability,
             ingredients,
             preparationTime,
-            sizeAndPrices: sizeAndPricesJson,
-            category: categoryName,
+            sizeAndPrices: sizeAndPriceStr,
+            categoryName,
             currency,
         } = req.body;
 
         try {
             const category =
-                await this.categoryService.findCategoryByName(categoryName);
+                await this.categoryService.getByCategoryName(categoryName);
             if (!category)
                 return next(
                     createHttpError(400, "Product category not found!"),
@@ -52,19 +57,19 @@ class ProductController {
 
             const prices: Price[] = [];
             const sizeAndPriceObject = JSON.parse(
-                sizeAndPricesJson,
+                sizeAndPriceStr,
             ) as SizeAndPriceData;
 
             for (const sizeName in sizeAndPriceObject) {
                 const productPrice = Number(sizeAndPriceObject[sizeName]);
                 const size =
-                    await this.sizeService.findSizeBySizeName(sizeName);
+                    await this.sizeService.getByProductSizeName(sizeName);
                 if (!size)
                     return next(
                         createHttpError(400, "Product Size not found!"),
                     );
 
-                const price = await this.priceService.savePrice({
+                const price = await this.priceService.save({
                     size,
                     price: productPrice,
                     currency,
@@ -73,7 +78,7 @@ class ProductController {
                 prices.push(price);
             }
 
-            const product = await this.productService.saveProduct({
+            const product = await this.productService.save({
                 name,
                 description,
                 discount: Number(discount),
@@ -96,7 +101,7 @@ class ProductController {
 
     async getProducts(req: Request, res: Response, next: NextFunction) {
         try {
-            const products = await this.productService.getProducts();
+            const products = await this.productService.gets();
             return res.json({
                 products,
                 message: "all product featched successfully.",
@@ -106,18 +111,20 @@ class ProductController {
         }
     }
 
-    async deleteProduct(req: Request, res: Response, next: NextFunction) {
+    async deleteProduct(req: AuthRequest, res: Response, next: NextFunction) {
         const productId = req.params.productId;
         if (isNaN(Number(productId)))
             return next(createHttpError(400, "Invalid product id!"));
 
         try {
-            const product = await this.productService.findProductById(
+            const product = await this.productService.getById(
                 Number(productId),
             );
-            if (!product)
+            if (!product) {
                 return next(createHttpError(400, "Product not found!"));
-            await this.productService.deleteProduct(Number(productId));
+            }
+
+            await this.productService.delete(Number(productId));
         } catch (error) {
             return next(error);
         }
@@ -130,7 +137,7 @@ class ProductController {
             return next(createHttpError(400, "Invalid product Id"));
 
         try {
-            const product = await this.productService.findProductById(
+            const product = await this.productService.getById(
                 Number(productId),
             );
             if (!product) next(createHttpError(400, "Product not found!"));
@@ -142,7 +149,7 @@ class ProductController {
     }
 
     async updateProduct(
-        req: CreateProductRequest,
+        req: AuthRequest<ProductRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -162,19 +169,19 @@ class ProductController {
             availability,
             preparationTime,
             discount,
-            category: categoryName,
+            categoryName,
             ingredients,
         } = req.body;
 
         try {
-            const product = await this.productService.findProductById(
+            const product = await this.productService.getById(
                 Number(productId),
             );
             if (!product)
                 return next(createHttpError(400, "Product not found!"));
 
             const category =
-                await this.categoryService.findCategoryByName(categoryName);
+                await this.categoryService.getByCategoryName(categoryName);
             if (!category)
                 return next(
                     createHttpError(400, "Product category not found!"),
@@ -190,7 +197,7 @@ class ProductController {
             // product.category = category;
             if (file) product.imageUrl = file.path;
 
-            await this.productService.saveProduct(product);
+            await this.productService.save(product);
 
             return res.json({
                 product,

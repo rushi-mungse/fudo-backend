@@ -1,14 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import { CategoryService } from "../../services";
 import { validationResult } from "express-validator";
-import { CreateCategoryRequest } from "../../types";
 import createHttpError from "http-errors";
+import { Category } from "../entity";
+import {
+    AuthRequest,
+    CategoryData,
+    CategoryServiceType,
+    CreateCategoryRequestBody,
+} from "../types/type";
 
 class CategoryController {
-    constructor(private categoryService: CategoryService) {}
+    constructor(
+        private categoryService: CategoryServiceType<Category, CategoryData>,
+    ) {}
 
     async create(
-        req: CreateCategoryRequest,
+        req: AuthRequest<CreateCategoryRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -18,7 +25,7 @@ class CategoryController {
 
         const { name } = req.body;
         try {
-            const category = await this.categoryService.saveCategory({ name });
+            const category = await this.categoryService.save({ name });
             return res.status(201).json({
                 category,
                 message: "Product category created successfully.",
@@ -28,9 +35,9 @@ class CategoryController {
         }
     }
 
-    async getCategories(req: Request, res: Response, next: NextFunction) {
+    async gets(req: Request, res: Response, next: NextFunction) {
         try {
-            const categories = await this.categoryService.getCategories();
+            const categories = await this.categoryService.gets();
             return res.json({ categories });
         } catch (error) {
             return next(error);
@@ -42,7 +49,7 @@ class CategoryController {
         if (isNaN(Number(categoryId)))
             return next(createHttpError(400, "Invalid category id!"));
         try {
-            const category = await this.categoryService.findCategoryById(
+            const category = await this.categoryService.getById(
                 Number(categoryId),
             );
             if (!category)
@@ -55,13 +62,13 @@ class CategoryController {
         }
     }
 
-    async deleteCategory(req: Request, res: Response, next: NextFunction) {
+    async delete(req: Request, res: Response, next: NextFunction) {
         const categoryId = req.params.categoryId;
         if (isNaN(Number(categoryId)))
             return next(createHttpError(400, "Invalid category id!"));
 
         try {
-            const category = await this.categoryService.findCategoryById(
+            const category = await this.categoryService.getById(
                 Number(categoryId),
             );
             if (!category)
@@ -69,7 +76,7 @@ class CategoryController {
                     createHttpError(400, "Product category not found!"),
                 );
 
-            await this.categoryService.deleteCategory(Number(categoryId));
+            await this.categoryService.delete(Number(categoryId));
             return res.json({
                 id: categoryId,
                 message: "Product category deleted successfully",
@@ -80,7 +87,7 @@ class CategoryController {
     }
 
     async updateCategory(
-        req: CreateCategoryRequest,
+        req: AuthRequest<CreateCategoryRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -94,7 +101,7 @@ class CategoryController {
 
         const { name } = req.body;
         try {
-            const category = await this.categoryService.findCategoryById(
+            const category = await this.categoryService.getById(
                 Number(categoryId),
             );
 
@@ -104,7 +111,7 @@ class CategoryController {
                 );
 
             category.name = name;
-            await this.categoryService.saveCategory(category);
+            await this.categoryService.save(category);
 
             return res.json({
                 category,

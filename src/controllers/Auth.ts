@@ -2,26 +2,35 @@ import { NextFunction, Response } from "express";
 import { validationResult } from "express-validator";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
-import { UserService, CredentialService, TokenService } from "../../services";
+import { Token, User } from "../entity";
 import {
     AuthRequest,
-    ForgetPasswordRequest,
-    JWTPayload,
-    LoginRequest,
-    SendOtpRequest,
-    SetPasswordRequest,
-    VerifyOtpRequest,
-} from "../../types";
+    SendOtpRequestBody,
+    UserServiceType,
+    UserData,
+    CredentialServiceType,
+    TokenServiceType,
+    TokenData,
+    VerifyOtpRequestBody,
+    TJwtPayload,
+    LoginRequestBody,
+    ForgetPasswordRequestBody,
+    SetPasswordRequestBody,
+} from "../types/type";
 
 class AuthController {
     constructor(
         private logger: Logger,
-        private userService: UserService,
-        private credentialService: CredentialService,
-        private tokenService: TokenService,
+        private userService: UserServiceType<User, UserData>,
+        private credentialService: CredentialServiceType,
+        private tokenService: TokenServiceType<Token, TokenData>,
     ) {}
 
-    async sendOtp(req: SendOtpRequest, res: Response, next: NextFunction) {
+    async sendOtp(
+        req: AuthRequest<SendOtpRequestBody>,
+        res: Response,
+        next: NextFunction,
+    ) {
         const result = validationResult(req);
         if (!result.isEmpty())
             return res.status(400).json({ error: result.array() });
@@ -38,7 +47,7 @@ class AuthController {
         }
 
         try {
-            const user = await this.userService.findUserByEmail(email);
+            const user = await this.userService.getByEmail(email);
             if (user) {
                 return next(
                     createHttpError(400, "This email already registered!"),
@@ -50,7 +59,7 @@ class AuthController {
 
             const ttl = 1000 * 60 * 15;
             const expires = Date.now() + ttl;
-            const otp = this.credentialService.generateOtp();
+            const otp = this.credentialService.getOtp();
             const dataForHash = `${otp}.${email}.${expires}.${hashPassword}`;
             const hashData =
                 this.credentialService.hashDataWithSecret(dataForHash);
@@ -67,7 +76,11 @@ class AuthController {
         }
     }
 
-    async verifyOtp(req: VerifyOtpRequest, res: Response, next: NextFunction) {
+    async verifyOtp(
+        req: AuthRequest<VerifyOtpRequestBody>,
+        res: Response,
+        next: NextFunction,
+    ) {
         const result = validationResult(req);
         if (!result.isEmpty())
             return res.status(400).json({ error: result.array() });
@@ -83,7 +96,7 @@ class AuthController {
         const [prevHashOtp, expires, hashPassword] = hashOtp.split("#");
 
         try {
-            const user = await this.userService.findUserByEmail(email);
+            const user = await this.userService.getByEmail(email);
             if (user) {
                 const error = createHttpError(
                     400,
@@ -110,19 +123,21 @@ class AuthController {
         }
 
         try {
-            const user = await this.userService.saveUser({
+            const user = await this.userService.save({
                 fullName,
                 email,
                 password: hashPassword,
             });
 
-            const payload: JWTPayload = {
+            const payload: TJwtPayload = {
                 userId: String(user.id),
                 role: user.role,
             };
 
             const accessToken = this.tokenService.signAccessToken(payload);
-            const token = await this.tokenService.saveRefreshToken(user);
+            //FIXME: currect
+            const expiresAt = new Date();
+            const token = await this.tokenService.save({ user, expiresAt });
             const refreshToken = this.tokenService.signRefreshToken({
                 ...payload,
                 tokenId: String(token.id),
@@ -143,7 +158,7 @@ class AuthController {
             });
 
             return res.json({
-                user: { ...user, password: null },
+                user,
                 message: "User register successfully.",
             });
         } catch (error) {
@@ -154,9 +169,9 @@ class AuthController {
     async self(req: AuthRequest, res: Response, next: NextFunction) {
         const userId = req.auth.userId;
         try {
-            const user = await this.userService.findUserById(Number(userId));
+            const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
-            return res.json({ user: { ...user, password: null } });
+            return res.json({ user });
         } catch (error) {
             return next(error);
         }
@@ -166,7 +181,7 @@ class AuthController {
         const tokenId = Number(req.auth.tokenId);
 
         try {
-            await this.tokenService.deleteToken(Number(tokenId));
+            await this.tokenService.delete(Number(tokenId));
 
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
@@ -180,7 +195,11 @@ class AuthController {
         }
     }
 
-    async login(req: LoginRequest, res: Response, next: NextFunction) {
+    async login(
+        req: AuthRequest<LoginRequestBody>,
+        res: Response,
+        next: NextFunction,
+    ) {
         const result = validationResult(req);
         if (!result.isEmpty())
             return res.status(400).json({ error: result.array() });
@@ -189,7 +208,7 @@ class AuthController {
 
         let user;
         try {
-            user = await this.userService.findUserByEmail(email);
+            user = await this.userService.getByEmail(email);
             if (!user) {
                 const error = createHttpError(
                     400,
@@ -211,13 +230,15 @@ class AuthController {
         }
 
         try {
-            const payload: JWTPayload = {
+            const payload: TJwtPayload = {
                 userId: String(user.id),
                 role: user.role,
             };
 
             const accessToken = this.tokenService.signAccessToken(payload);
-            const token = await this.tokenService.saveRefreshToken(user);
+            //FIXME: correct
+            const expiresAt = new Date();
+            const token = await this.tokenService.save({ user, expiresAt });
             const refreshToken = this.tokenService.signRefreshToken({
                 ...payload,
                 tokenId: String(token.id),
@@ -241,7 +262,7 @@ class AuthController {
         }
 
         return res.json({
-            user: { ...user, password: null },
+            user,
             message: "User login successfully.",
         });
     }
@@ -251,7 +272,7 @@ class AuthController {
 
         let user;
         try {
-            user = await this.userService.findUserById(Number(auth.userId));
+            user = await this.userService.getById(Number(auth.userId));
             if (!user) {
                 const error = createHttpError(
                     400,
@@ -259,19 +280,21 @@ class AuthController {
                 );
                 return next(error);
             }
-            await this.tokenService.deleteToken(Number(auth.tokenId));
+            await this.tokenService.delete(Number(auth.tokenId));
         } catch (error) {
             return next(error);
         }
 
         try {
-            const payload: JWTPayload = {
+            const payload: TJwtPayload = {
                 userId: String(user.id),
                 role: user.role,
             };
 
             const accessToken = this.tokenService.signAccessToken(payload);
-            const token = await this.tokenService.saveRefreshToken(user);
+            //FIXME:
+            const expiresAt = new Date();
+            const token = await this.tokenService.save({ user, expiresAt });
             const refreshToken = this.tokenService.signRefreshToken({
                 ...payload,
                 tokenId: String(token.id),
@@ -290,14 +313,14 @@ class AuthController {
                 httpOnly: true,
                 maxAge: 1000 * 60 * 60 * 24 * 365,
             });
-            return res.json({ user: { ...user, password: null } });
+            return res.json({ user });
         } catch (error) {
             return next(error);
         }
     }
 
     async forgetPassword(
-        req: ForgetPasswordRequest,
+        req: AuthRequest<ForgetPasswordRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -308,7 +331,7 @@ class AuthController {
         const { email } = req.body;
 
         try {
-            const user = await this.userService.findUserByEmail(email);
+            const user = await this.userService.getByEmail(email);
             if (!user) {
                 return next(
                     createHttpError(400, "This email is not registered!"),
@@ -317,7 +340,7 @@ class AuthController {
 
             const ttl = 1000 * 60 * 10;
             const expires = Date.now() + ttl;
-            const otp = this.credentialService.generateOtp();
+            const otp = this.credentialService.getOtp();
             const prepareDataForHash = `${otp}.${email}.${expires}`;
             const hashOtpData =
                 this.credentialService.hashDataWithSecret(prepareDataForHash);
@@ -339,7 +362,7 @@ class AuthController {
     }
 
     async setPassword(
-        req: SetPasswordRequest,
+        req: AuthRequest<SetPasswordRequestBody>,
         res: Response,
         next: NextFunction,
     ) {
@@ -365,7 +388,7 @@ class AuthController {
 
         const [prevHashedOtp, expires] = hashOtp.split("#");
         try {
-            const user = await this.userService.findUserByEmail(email);
+            const user = await this.userService.getByEmail(email);
             if (!user) {
                 return next(
                     createHttpError(400, "This email is not registered!"),
@@ -387,8 +410,10 @@ class AuthController {
 
             const hashPassword =
                 await this.credentialService.hashData(password);
-            await this.userService.updateUserPassword(user.id, hashPassword);
-            return res.json({ user: { ...user, password: null } });
+            user.password = hashPassword;
+            await this.userService.save(user);
+
+            return res.json({ user });
         } catch (error) {
             return next(error);
         }
