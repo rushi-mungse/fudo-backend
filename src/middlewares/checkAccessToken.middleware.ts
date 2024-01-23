@@ -1,8 +1,8 @@
 import { Request } from "express";
 import { GetVerificationKey, expressjwt } from "express-jwt";
 import jwksClient from "jwks-rsa";
-import { CookieType } from "../types";
 import { JWKS_URL } from "../config/config";
+import { CookieData } from "../types/type";
 
 export default expressjwt({
     secret: jwksClient.expressJwtSecret({
@@ -19,7 +19,7 @@ export default expressjwt({
             const accessToken = authHeader.split(" ")[1];
             if (accessToken) return accessToken;
         }
-        const { accessToken } = req.cookies as CookieType;
+        const { accessToken } = req.cookies as CookieData;
         return accessToken;
     },
 });

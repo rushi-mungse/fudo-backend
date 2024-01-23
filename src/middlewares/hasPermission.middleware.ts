@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { AuthRequest } from "../types";
+import { AuthRequest } from "../types/type";
 import createHttpError from "http-errors";
 
 export default (roles: string[]) => {
