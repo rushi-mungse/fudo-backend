@@ -1,29 +1,29 @@
 import { Repository } from "typeorm";
-import { Category } from "../../entity";
-import { CategoryData } from "../../types";
+import { Category } from "../entity";
+import { CategoryData, CategoryServiceType } from "../types/type";
 
-class CategoryService {
+class CategoryService implements CategoryServiceType<Category, CategoryData> {
     constructor(private categoryRepository: Repository<Category>) {}
 
-    async saveCategory(category: CategoryData): Promise<Category> {
+    async save(category: CategoryData): Promise<Category> {
         return await this.categoryRepository.save(category);
     }
 
-    async getCategories(): Promise<Category[]> {
+    async gets(): Promise<Category[]> {
         return await this.categoryRepository.find();
     }
 
-    async findCategoryById(categoryId: number): Promise<Category | null> {
+    async getById(categoryId: number): Promise<Category | null> {
         return await this.categoryRepository.findOne({
             where: { id: categoryId },
         });
     }
 
-    async deleteCategory(categoryId: number): Promise<void> {
+    async delete(categoryId: number): Promise<void> {
         await this.categoryRepository.delete(categoryId);
     }
 
-    async findCategoryByName(categoryName: string): Promise<Category | null> {
+    async getByCategoryName(categoryName: string): Promise<Category | null> {
         return await this.categoryRepository.findOne({
             where: { name: categoryName },
         });

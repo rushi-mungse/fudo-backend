@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import createHttpError from "http-errors";
-import { HASH_SECRET } from "../../config/config";
 
-export default class CredentialService {
+import { HASH_SECRET } from "../config";
+import { CredentialServiceType } from "../types/type";
+
+export default class CredentialService implements CredentialServiceType {
     async hashData(data: string) {
         const SALT = 10;
         return await bcrypt.hash(data, SALT);
@@ -22,7 +24,7 @@ export default class CredentialService {
             .digest("hex");
     }
 
-    generateOtp() {
+    getOtp() {
         return crypto.randomInt(1000, 9999);
     }
 }
