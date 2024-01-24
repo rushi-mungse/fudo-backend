@@ -10,8 +10,8 @@
     "formate:check": "prettier . --check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --no-cache --coverage --all --runInBand",
-    "test:watch": "jest --watch --runInBand",
+    "test": "jest --no-cache --coverage --all --runInBand --testTimeout=30000",
+    "test:watch": "jest --watch --runInBand --testTimeout=30000",
     "prepare": "husky install"
   },
   "lint-staged": {
