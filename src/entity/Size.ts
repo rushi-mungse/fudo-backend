@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -17,7 +18,7 @@ class Size {
     @OneToMany(() => Price, (price) => price.size)
     prices: Price[];
 
-    @Column({ type: "enum", enum: ProductSize })
+    @Column({ type: "enum", enum: ProductSize, nullable: true })
     size: string;
 
     @UpdateDateColumn()
