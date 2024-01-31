@@ -17,9 +17,11 @@ import { UserRole } from "../constants";
 import { checkAccessToken, hasPermission, uploadFile } from "../middlewares";
 import {
     createProductValidator,
+    listProductValidator,
     updateProductValidator,
 } from "../validators/product";
 import { AuthRequest, ProductRequestBody } from "../types/type";
+import uploadOnCloudinary from "../config/cloudinary";
 
 const router = express.Router();
 
@@ -39,6 +41,7 @@ const productController = new ProductController(
     categoryService,
     sizeService,
     priceService,
+    uploadOnCloudinary,
 );
 
 router.post(
@@ -58,9 +61,9 @@ router.post(
 );
 
 router.get(
-    "/",
+    "/:productId",
     (req: Request, res: Response, next: NextFunction) =>
-        productController.getProducts(
+        productController.getProduct(
             req,
             res,
             next,
@@ -68,9 +71,10 @@ router.get(
 );
 
 router.get(
-    "/:productId",
+    "/",
+    listProductValidator,
     (req: Request, res: Response, next: NextFunction) =>
-        productController.getProduct(
+        productController.getProducts(
             req,
             res,
             next,

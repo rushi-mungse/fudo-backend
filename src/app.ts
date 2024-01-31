@@ -3,6 +3,7 @@ import express from "express";
 import { errorHandlerMiddleware } from "./middlewares";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import cors from "cors";
 import {
     authRouter,
     categoryRouter,
@@ -12,13 +13,21 @@ import {
     orderRouter,
     sizeRouter,
 } from "./routes";
+import path from "path";
 
 const app = express();
 
+const corsOption: cors.CorsOptions = {
+    origin: ["http://localhost:5173"],
+    credentials: true,
+};
+
+app.use(cors(corsOption));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "src/uploads")));
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
