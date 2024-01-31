@@ -114,7 +114,7 @@ class ProductController {
         try {
             const [products, count] =
                 await this.productService.get(validatedQuery);
-            // const products = await this.productService.gets();
+
             return res.json({
                 products,
                 currentPage: validatedQuery.currentPage,
