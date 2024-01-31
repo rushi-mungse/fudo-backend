@@ -12,12 +12,16 @@ import {
     UpdateUserByAdminRequestBody,
     UserData,
 } from "../types/type";
+import { UploadApiResponse } from "cloudinary";
 
 class UserController {
     constructor(
         private logger: Logger,
         private userService: Service<User, UserData>,
         private credentialService: CredentialServiceType,
+        private uploadOnCloudinary: (
+            localPath: string,
+        ) => Promise<UploadApiResponse>,
     ) {}
 
     async updateUserFullName(
@@ -119,7 +123,9 @@ class UserController {
             const user = await this.userService.getById(Number(userId));
             if (!user) return next(createHttpError(400, "User not found!"));
 
-            user.avatar = file.path;
+            const cloudinaryResponse = await this.uploadOnCloudinary(file.path);
+            user.avatar = cloudinaryResponse.url;
+
             await this.userService.save(user);
             return res.json({
                 user,
