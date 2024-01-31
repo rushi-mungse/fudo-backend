@@ -28,4 +28,14 @@ router.post(
         ) as unknown as RequestHandler,
 );
 
+router.delete(
+    "/:productSizeId",
+    [checkAccessToken],
+    (req: Request, res: Response, next: NextFunction) =>
+        sizeController.deleteProductSize(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
 export default router;
