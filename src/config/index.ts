@@ -17,6 +17,9 @@ export const {
     PRIVATE_KEY,
     REFRESH_TOKEN_SECRET,
     JWKS_URL,
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
 } = process.env;
 
 export { default as logger } from "./logger";
