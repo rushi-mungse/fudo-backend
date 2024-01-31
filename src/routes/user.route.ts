@@ -21,6 +21,7 @@ import {
     UpdateFullNameRequestBody,
     UpdateUserByAdminRequestBody,
 } from "../types/type";
+import uploadOnCloudinary from "../config/cloudinary";
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ const userController = new UserController(
     logger,
     userService,
     credentialService,
+    uploadOnCloudinary,
 );
 
 router.post(
