@@ -116,6 +116,11 @@ export interface UserServiceType<Entity, Data> extends Service<Entity, Data> {
     getByEmail(email: string): Promise<User | null>;
 }
 
+export interface ProductServiceType<Entity, Data>
+    extends Service<Entity, Data> {
+    get(queryParams: GetQueryParams): Promise<[Entity[], number]>;
+}
+
 export interface CategoryServiceType<Entity, Data>
     extends Service<Entity, Data> {
     getByCategoryName(categoryName: string): Promise<Category | null>;
@@ -229,6 +234,11 @@ export interface ProductRequestBody {
     ingredients: string;
     preparationTime: string;
     sizeAndPrices: string;
-    categoryName: string;
+    category: string;
     currency: string;
+}
+
+export interface GetQueryParams {
+    currentPage: number;
+    perPage: number;
 }
