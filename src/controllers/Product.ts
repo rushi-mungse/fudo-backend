@@ -1,26 +1,32 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
-import { validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 import { Category, Price, Product, Size } from "../entity";
 import {
     AuthRequest,
     CategoryData,
     CategoryServiceType,
+    GetQueryParams,
     PriceData,
     ProductData,
     ProductRequestBody,
+    ProductServiceType,
     ProductSizeData,
     ProductSizeServiceType,
     Service,
     SizeAndPriceData,
 } from "../types/type";
+import { UploadApiResponse } from "cloudinary";
 
 class ProductController {
     constructor(
-        private productService: Service<Product, ProductData>,
+        private productService: ProductServiceType<Product, ProductData>,
         private categoryService: CategoryServiceType<Category, CategoryData>,
         private sizeService: ProductSizeServiceType<Size, ProductSizeData>,
         private priceService: Service<Price, PriceData>,
+        private uploadOnCloudinary: (
+            localPath: string,
+        ) => Promise<UploadApiResponse>,
     ) {}
 
     async createProduct(
@@ -43,7 +49,7 @@ class ProductController {
             ingredients,
             preparationTime,
             sizeAndPrices: sizeAndPriceStr,
-            categoryName,
+            category: categoryName,
             currency,
         } = req.body;
 
@@ -59,7 +65,6 @@ class ProductController {
             const sizeAndPriceObject = JSON.parse(
                 sizeAndPriceStr,
             ) as SizeAndPriceData;
-
             for (const sizeName in sizeAndPriceObject) {
                 const productPrice = Number(sizeAndPriceObject[sizeName]);
                 const size =
@@ -78,6 +83,8 @@ class ProductController {
                 prices.push(price);
             }
 
+            const cloudinaryResponse = await this.uploadOnCloudinary(file.path);
+
             const product = await this.productService.save({
                 name,
                 description,
@@ -85,7 +92,7 @@ class ProductController {
                 availability: availability === "true" ? true : false,
                 ingredients: JSON.parse(ingredients) as string[],
                 preparationTime: Number(preparationTime),
-                imageUrl: file.path,
+                imageUrl: cloudinaryResponse.url,
                 categories: [category],
                 prices,
             });
@@ -100,10 +107,19 @@ class ProductController {
     }
 
     async getProducts(req: Request, res: Response, next: NextFunction) {
+        const validatedQuery = matchedData(req, {
+            onlyValidData: true,
+        }) as GetQueryParams;
+
         try {
-            const products = await this.productService.gets();
+            const [products, count] =
+                await this.productService.get(validatedQuery);
+            // const products = await this.productService.gets();
             return res.json({
                 products,
+                currentPage: validatedQuery.currentPage,
+                perPage: validatedQuery.perPage,
+                totalCount: count,
                 message: "all product featched successfully.",
             });
         } catch (error) {
@@ -123,6 +139,9 @@ class ProductController {
             if (!product) {
                 return next(createHttpError(400, "Product not found!"));
             }
+
+            product.categories = [];
+            await this.productService.save(product);
 
             await this.productService.delete(Number(productId));
         } catch (error) {
@@ -169,7 +188,7 @@ class ProductController {
             availability,
             preparationTime,
             discount,
-            categoryName,
+            category: categoryName,
             ingredients,
         } = req.body;
 
@@ -186,14 +205,19 @@ class ProductController {
                 return next(
                     createHttpError(400, "Product category not found!"),
                 );
-
             product.name = name;
             product.description = description;
             product.discount = Number(discount);
             product.availability = availability === "true" ? true : false;
             product.ingredients = JSON.parse(ingredients) as string[];
             product.preparationTime = Number(preparationTime);
-            if (file) product.imageUrl = file.path;
+
+            if (file) {
+                const cloudinaryResponse = await this.uploadOnCloudinary(
+                    file.path,
+                );
+                product.imageUrl = cloudinaryResponse.url;
+            }
 
             await this.productService.save(product);
 
