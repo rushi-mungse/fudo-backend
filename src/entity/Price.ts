@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -13,10 +14,14 @@ class Price {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Product, (product) => product.prices)
+    @ManyToOne(() => Product, (product) => product.prices, {
+        onDelete: "CASCADE",
+    })
+    @JoinColumn()
     product: Product;
 
-    @ManyToOne(() => Size, (size) => size.prices)
+    @ManyToOne(() => Size, (size) => size.prices, { onDelete: "CASCADE" })
+    @JoinColumn()
     size: Size;
 
     @Column()
